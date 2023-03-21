@@ -1,0 +1,10 @@
+version: 1.2
+workflows:
+  - subclass: WDL
+    publish: True
+    primaryDescriptorPath: /bulkAtlas/RNA_pipeline.wdl
+    testParameterFiles: 
+      - /test.json
+    authors:
+      - name: jkalfon
+        email: jkalfon@whitelabgx.com
