@@ -33,12 +33,9 @@ workflow RNAseq {
         File refFastaIndex
         File refDict
 
-        String? gatk4_docker_override
-        String gatk4_docker = select_first([gatk4_docker_override, "broadinstitute/gatk:latest"])
-        String? gatk_path_override
-        String gatk_path = select_first([gatk_path_override, "/gatk/gatk"])
-        String? star_docker_override
-        String star_docker = select_first([star_docker_override, "quay.io/humancellatlas/secondary-analysis-star:v0.2.2-2.5.3a-40ead6e"])
+        String gatk4_docker = "broadinstitute/gatk:latest"
+        String gatk_path = "/gatk/gatk"
+        String star_docker = "quay.io/humancellatlas/secondary-analysis-star:v0.2.2-2.5.3a-40ead6e"
 
         Array[File] knownVcfs
         Array[File] knownVcfsIndices
@@ -54,36 +51,33 @@ workflow RNAseq {
         File annotationsGTF
 
         ## Optional user optimizations
-        Int? haplotypeScatterCount
-        Int scatterCount = select_first([haplotypeScatterCount, 6])
+        Int haplotypeScatterCount=6
 
-        Int? preemptible_tries
-        Int preemptible_count = select_first([preemptible_tries, 3])
+        Int preemptible_tries=3
         # funcotator
         String? sequencing_center
         String? sequence_source
         String? funco_reference_version
-        String? funco_output_format="VCF"
-        Boolean? funco_compress=true
-        Boolean? funco_use_gnomad_AF=false
+        String funco_output_format="VCF"
+        Boolean funco_compress=true
+        Boolean funco_use_gnomad_AF=false
         File? funco_data_sources_tar_gz
         String? funco_transcript_selection_mode
         File? funco_transcript_selection_list
         Array[String]? funco_annotation_defaults
         Array[String]? funco_annotation_overrides
         Array[String]? funcotator_excluded_fields
-        Boolean? funco_filter_funcotations
+        Boolean funco_filter_funcotations=true
         String? funcotator_extra_args
     }
 
-    Boolean filter_funcotations_or_default = select_first([filter_funcotations, true])
     Int funco_tar_size = if defined(funco_data_sources_tar_gz) then ceil(size(funco_data_sources_tar_gz, "GB") * 3) else 100
     
     call gtfToCallingIntervals {
         input:
             gtf = annotationsGTF,
             ref_dict = refDict,
-            preemptible_count = preemptible_count,
+            preemptible_count = preemptible_tries,
             gatk_path = gatk_path,
             docker = gatk4_docker
     }
@@ -92,7 +86,7 @@ workflow RNAseq {
         input:
             input_bam = inputBam,
             base_name = sampleName + ".dedupped",
-            preemptible_count = preemptible_count,
+            preemptible_count = preemptible_tries,
             docker = gatk4_docker,
             gatk_path = gatk_path
     }
@@ -106,7 +100,7 @@ workflow RNAseq {
             ref_fasta = refFasta,
             ref_fasta_index = refFastaIndex,
             ref_dict = refDict,
-            preemptible_count = preemptible_count,
+            preemptible_count = preemptible_tries,
             docker = gatk4_docker,
             gatk_path = gatk_path
     }
@@ -124,7 +118,7 @@ workflow RNAseq {
             ref_dict = refDict,
             ref_fasta = refFasta,
             ref_fasta_index = refFastaIndex,
-            preemptible_count = preemptible_count,
+            preemptible_count = preemptible_tries,
             docker = gatk4_docker,
             gatk_path = gatk_path
     }
@@ -138,7 +132,7 @@ workflow RNAseq {
             ref_fasta_index = refFastaIndex,
             ref_dict = refDict,
             recalibration_report = BaseRecalibrator.recalibration_report,
-            preemptible_count = preemptible_count,
+            preemptible_count = preemptible_tries,
             docker = gatk4_docker,
             gatk_path = gatk_path
     }
@@ -147,8 +141,8 @@ workflow RNAseq {
     call ScatterIntervalList {
         input:
             interval_list = gtfToCallingIntervals.interval_list,
-            scatter_count = scatterCount,
-            preemptible_count = preemptible_count,
+            scatter_count = haplotypeScatterCount,
+            preemptible_count = preemptible_tries,
             docker = gatk4_docker,
             gatk_path = gatk_path
     }
@@ -167,7 +161,7 @@ workflow RNAseq {
                 dbSNP_vcf = dbSnpVcf,
                 dbSNP_vcf_index = dbSnpVcfIndex,
                 stand_call_conf = minConfidenceForVariantCalling,
-                preemptible_count = preemptible_count,
+                preemptible_count = preemptible_tries,
                 docker = gatk4_docker,
                 gatk_path = gatk_path
         }
@@ -179,7 +173,7 @@ workflow RNAseq {
             input_vcfs = HaplotypeCaller.output_vcf,
             input_vcfs_indexes =  HaplotypeCaller.output_vcf_index,
             output_vcf_name = sampleName + ".g.vcf.gz",
-            preemptible_count = preemptible_count,
+            preemptible_count = preemptible_tries,
             docker = gatk4_docker,
             gatk_path = gatk_path
     }
@@ -192,13 +186,13 @@ workflow RNAseq {
             ref_fasta = refFasta,
             ref_fasta_index = refFastaIndex,
             ref_dict = refDict,
-            preemptible_count = preemptible_count,
+            preemptible_count = preemptible_tries,
             docker = gatk4_docker,
             gatk_path = gatk_path
     }
 
     Int disk_pad = 15
-    Int file_size_multiplier=2.25
+    Float file_size_multiplier=2.25
 
     call Funcotate {
         input:
@@ -223,11 +217,10 @@ workflow RNAseq {
             annotation_overrides = funco_annotation_overrides,
             funcotator_excluded_fields = funcotator_excluded_fields,
             interval_list=gtfToCallingIntervals.interval_list, # maybe not the right one
-            filter_funcotations = filter_funcotations_or_default,
+            filter_funcotations = funco_filter_funcotations,
             extra_args = funcotator_extra_args,
             disk_space = ceil(size(VariantFiltration.output_vcf, "GB") * file_size_multiplier)  + funco_tar_size + disk_pad,
             gatk_docker=gatk4_docker,
-            boot_disk_size=boot_disk_size,
             machine_mem=4000,
             preemptible=2,
             max_retries=2,
@@ -737,7 +730,7 @@ task MergeVCFs {
         Array[File] input_vcfs_indexes
         String output_vcf_name
 
-        Int? disk_size = 5
+        Int disk_size = 5
 
         String gatk_path
 
@@ -863,12 +856,12 @@ task Funcotate {
         File input_vcf_idx
         String reference_version
         String output_file_base_name
-        String output_format
-        Boolean compress
-        Boolean use_gnomad
+        String output_format="VCF"
+        Boolean compress=true
+        Boolean use_gnomad=false
         # This should be updated when a new version of the data sources is released
         # TODO: Make this dynamically chosen in the command.
-        File? data_sources_tar_gz = "gs://broad-public-datasets/funcotator/funcotator_dataSources.v1.7.20200521s.tar.gz"
+        File data_sources_tar_gz = "gs://broad-public-datasets/funcotator/funcotator_dataSources.v1.7.20200521s.tar.gz"
         String? control_id
         String? case_id
         String? sequencing_center
@@ -885,7 +878,6 @@ task Funcotate {
         String? gcs_project_for_requester_pays
 
         # ==============
-        Runtime runtime_params
         Int? disk_space   #override to request more disk than default small task params
 
         # You may have to change the following two parameter values depending on the task requirements
@@ -894,11 +886,11 @@ task Funcotate {
         Int default_disk_space_gb = 100
         
         String gatk_docker
-        Int? boot_disk_size=10
-        Int? machine_mem=4000
-        Int? preemptible=2
-        Int? max_retries=2
-        Int? cpu=2
+        Int boot_disk_size=12
+        Int machine_mem=4000
+        Int preemptible=2
+        Int max_retries=2
+        Int cpu=2
         }
 
         # ==============
@@ -929,7 +921,7 @@ task Funcotate {
 
         command <<<
             set -e
-            export GATK_LOCAL_JAR=~{default="/root/gatk.jar" runtime_params.gatk_override}
+            export GATK_LOCAL_JAR="/root/gatk.jar"
 
             # Extract our data sources:
             echo "Extracting data sources zip file..."
@@ -953,7 +945,7 @@ task Funcotate {
             fi
 
         # Run Funcotator:
-        gatk --java-options "-Xmx~{runtime_params.command_mem}m" Funcotator \
+        gatk --java-options "-Xmx~{machine_mem - 500}m" Funcotator \
             --data-sources-path $DATA_SOURCES_FOLDER \
             --ref-version ~{reference_version} \
             --output-file-format ~{output_format} \
