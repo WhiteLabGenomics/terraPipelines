@@ -4,7 +4,7 @@ import "star.wdl" as star_v1
 import "rnaseqc2.wdl" as rnaseqc2_v1
 import "rsem.wdl" as rsem_v1
 #import "star_fusion.wdl" as star_fusion
-#import "rnaseq-germline-snps-indels.wdl" as rnaseq_mutations
+import "rnaseq-germline-snps-indels.wdl" as rnaseq_mutations
 
 
 workflow RNA_pipeline {
@@ -25,17 +25,17 @@ workflow RNA_pipeline {
     File rsem_reference="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/rsem_index.tar.gz"
     
     # mutations
-    #File refFasta="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.fasta"
-    #File refFastaIndex="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.fasta.fai"
-    #File refDict="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.dict"
+    File refFasta="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.fasta"
+    File refFastaIndex="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.fasta.fai"
+    File refDict="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.dict"
 
-    #Array[File] knownVcfs=["gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz",
-    #                        "gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"]
-    #Array[File] knownVcfsIndices=['gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz.tbi',
-    #                              "gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi"]
-    #File dbSnpVcf="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz"
-    #File dbSnpVcfIndex="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz.tbi"
-    #File annotationsGTF="gs://gcp-public-data--broad-references/hg38/v0/gencode.v27.primary_assembly.annotation.gtf"#gs://gatk-test-data/intervals/star.gencode.v19.transcripts.patched_contigs.gtf
+    Array[File] knownVcfs=["gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz",
+                            "gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"]
+    Array[File] knownVcfsIndices=['gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz.tbi',
+                                  "gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi"]
+    File dbSnpVcf="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz"
+    File dbSnpVcfIndex="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz.tbi"
+    File annotationsGTF="gs://gcp-public-data--broad-references/hg38/v0/gencode.v27.primary_assembly.annotation.gtf"#gs://gatk-test-data/intervals/star.gencode.v19.transcripts.patched_contigs.gtf
     # TODO: create a test.wdl.json
     # TODO: create a local_test.wdl.json
     # TODO: add in other side experimental genomes that could be in our files (like ERCC)
@@ -131,19 +131,19 @@ workflow RNA_pipeline {
       paired_end="true"
   }
 
-  #call rnaseq_mutations.RNAseq as rnaseq_mutations {
-  #  input:
-  #    inputBam=star.bam_file,
-  #    sampleName=sample_id,
-  #    refFasta=refFasta,
-  #    refFastaIndex=refFastaIndex,
-  #    refDict=refDict,
-  #    knownVcfs=knownVcfs,
-  #    knownVcfsIndices=knownVcfsIndices,
-  #    dbSnpVcf=dbSnpVcf,
-  #    dbSnpVcfIndex=dbSnpVcfIndex,
-  #    annotationsGTF=annotationsGTF
-  #}
+  call rnaseq_mutations.RNAseq as rnaseq_mutations {
+    input:
+      inputBam=star.bam_file,
+      sampleName=sample_id,
+      refFasta=refFasta,
+      refFastaIndex=refFastaIndex,
+      refDict=refDict,
+      knownVcfs=knownVcfs,
+      knownVcfsIndices=knownVcfsIndices,
+      dbSnpVcf=dbSnpVcf,
+      dbSnpVcfIndex=dbSnpVcfIndex,
+      annotationsGTF=annotationsGTF
+  }
   # TODO: annotate the mutations
   # bcftools? (need to see some vcfs)
   # cnn_filter (once trainned on )
@@ -192,8 +192,8 @@ workflow RNA_pipeline {
     #File fusion_predictions=StarFusion.fusion_predictions
     #File fusion_predictions_abridged=StarFusion.fusion_predictions_abridged
     # mutations
-    #File variant_filtered_vcf=rnaseq_mutations.variant_filtered_vcf
-    #File variant_filtered_vcf_index=rnaseq_mutations.variant_filtered_vcf_index
+    File variant_filtered_vcf=rnaseq_mutations.variant_filtered_vcf
+    File variant_filtered_vcf_index=rnaseq_mutations.variant_filtered_vcf_index
 
   }
 }
