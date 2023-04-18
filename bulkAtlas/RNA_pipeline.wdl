@@ -4,7 +4,7 @@ import "star.wdl" as star_v1
 import "rnaseqc2.wdl" as rnaseqc2_v1
 import "rsem.wdl" as rsem_v1
 #import "star_fusion.wdl" as star_fusion
-import "rnaseq-germline-snps-indels.wdl" as rnaseq_mutations
+#import "rnaseq-germline-snps-indels.wdl" as rnaseq_mutations
 
 
 workflow RNA_pipeline {
@@ -15,24 +15,31 @@ workflow RNA_pipeline {
     File fastq2
     String sample_id
 
-    # mutations
-    File refFasta="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta"
-    File refFastaIndex="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.fai"
-    File refDict="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dict"
+    #star_v1
+    File star_index= "gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/star_index_1pass.tar.gz"
 
-    Array[File] knownVcfs=["gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz",
-                            "gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"]
-    Array[File] knownVcfsIndices=['gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz.tbi',
-                                  "gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi"]
-    File dbSnpVcf="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz"
-    File dbSnpVcfIndex="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz.tbi"
-    File annotationsGTF="gs://gcp-public-data--broad-references/hg38/v0/gencode.v27.primary_assembly.annotation.gtf"#gs://gatk-test-data/intervals/star.gencode.v19.transcripts.patched_contigs.gtf
+    #rnaseqc2_v1
+    File genes_gtf="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf"
+
+    #rsem
+    File rsem_reference="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/rsem_index.tar.gz"
+    
+    # mutations
+    #File refFasta="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.fasta"
+    #File refFastaIndex="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.fasta.fai"
+    #File refDict="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.dict"
+
+    #Array[File] knownVcfs=["gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz",
+    #                        "gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"]
+    #Array[File] knownVcfsIndices=['gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz.tbi',
+    #                              "gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi"]
+    #File dbSnpVcf="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz"
+    #File dbSnpVcfIndex="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz.tbi"
+    #File annotationsGTF="gs://gcp-public-data--broad-references/hg38/v0/gencode.v27.primary_assembly.annotation.gtf"#gs://gatk-test-data/intervals/star.gencode.v19.transcripts.patched_contigs.gtf
     # TODO: create a test.wdl.json
     # TODO: create a local_test.wdl.json
     # TODO: add in other side experimental genomes that could be in our files (like ERCC)
     # TODO: put all at the same gencode version (latest)
-    #star_v1
-    File star_index= "gs://ccle_default_params/STAR_genome_GRCh38_noALT_noHLA_noDecoy_ERCC_v29_oh100.tar.gz"
 
     #star fusion
     #Array[File] ctat_genome_lib_build_dir_files=[
@@ -70,12 +77,6 @@ workflow RNA_pipeline {
     #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/sjdbList.out.tab",
     #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/transcriptInfo.tab"
     #]
-
-    #rsem
-    File rsem_reference="gs://ccle_default_params/rsem_reference_GRCh38_gencode29_ercc.tar.gz"
-    
-    #rnaseqc2_v1
-    File genes_gtf="gs://ccle_default_params/references_gtex_gencode.v29.GRCh38.ERCC.genes.collapsed_only.gtf"
 
     #rna_mutect2
     #Boolean run_funcotator=false
@@ -121,19 +122,28 @@ workflow RNA_pipeline {
       sample_id=sample_id
   }
 
-  call rnaseq_mutations.RNAseq as rnaseq_mutations {
+  call rsem_v1.rsem as rsem {
     input:
-      inputBam=star.bam_file,
-      sampleName=sample_id,
-      refFasta=refFasta,
-      refFastaIndex=refFastaIndex,
-      refDict=refDict,
-      knownVcfs=knownVcfs,
-      knownVcfsIndices=knownVcfsIndices,
-      dbSnpVcf=dbSnpVcf,
-      dbSnpVcfIndex=dbSnpVcfIndex,
-      annotationsGTF=annotationsGTF
+      transcriptome_bam=star.transcriptome_bam,
+      prefix=sample_id,
+      rsem_reference=rsem_reference,
+      is_stranded="false",
+      paired_end="true"
   }
+
+  #call rnaseq_mutations.RNAseq as rnaseq_mutations {
+  #  input:
+  #    inputBam=star.bam_file,
+  #    sampleName=sample_id,
+  #    refFasta=refFasta,
+  #    refFastaIndex=refFastaIndex,
+  #    refDict=refDict,
+  #    knownVcfs=knownVcfs,
+  #    knownVcfsIndices=knownVcfsIndices,
+  #    dbSnpVcf=dbSnpVcf,
+  #    dbSnpVcfIndex=dbSnpVcfIndex,
+  #    annotationsGTF=annotationsGTF
+  #}
   # TODO: annotate the mutations
   # bcftools? (need to see some vcfs)
   # cnn_filter (once trainned on )
@@ -147,14 +157,6 @@ workflow RNA_pipeline {
   # get the tool to move data in Terra from the terra bucket to our bucket
   # add a cleanup step for the terra jobs. 
 
-  call rsem_v1.rsem as rsem {
-    input:
-      transcriptome_bam=star.transcriptome_bam,
-      prefix=sample_id,
-      rsem_reference=rsem_reference,
-      is_stranded="false",
-      paired_end="true"
-  }
 
   # TODO: give junctions directly to star fusion
   #call star_fusion.StarFusion as StarFusion {
@@ -190,8 +192,8 @@ workflow RNA_pipeline {
     #File fusion_predictions=StarFusion.fusion_predictions
     #File fusion_predictions_abridged=StarFusion.fusion_predictions_abridged
     # mutations
-    File variant_filtered_vcf=rnaseq_mutations.variant_filtered_vcf
-    File variant_filtered_vcf_index=rnaseq_mutations.variant_filtered_vcf_index
+    #File variant_filtered_vcf=rnaseq_mutations.variant_filtered_vcf
+    #File variant_filtered_vcf_index=rnaseq_mutations.variant_filtered_vcf_index
 
   }
 }

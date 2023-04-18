@@ -73,6 +73,6 @@ workflow rnaseqc2_workflow {
         File gene_counts = rnaseqc2.gene_counts
         File exon_counts = rnaseqc2.exon_counts
         File metrics = rnaseqc2.metrics
-        File insertsize_distr = rnaseqc2.insertsize_distr       
+        File insertsize_distr = rnaseqc2.insertsize_distr
     }
 }

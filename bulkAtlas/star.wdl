@@ -45,11 +45,11 @@ task star {
     command {
         set -euo pipefail
 
-        if [[ ${fastq1} == *".tar" || ${fastq1} == *".tar.gz" ]]; then
+        if [[ ${fastq1} == *".tar" || ${fastq1} == *".tar.gz" || ${fastq1} == *".gz"]]; then
             tar -xvvf ${fastq1}
-            fastq1_abs=$(for f in *_1.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
-            fastq2_abs=$(for f in *_2.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
-            if [[ $fastq1_abs == *"*_1.fastq*" ]]; then  # no paired-end FASTQs found; check for single-end FASTQ
+            fastq1_abs=$(for f in *_R1_*.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
+            fastq2_abs=$(for f in *_R2_*.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
+            if [[ $fastq1_abs == *"*_R1_*.fastq*" ]]; then  # no paired-end FASTQs found; check for single-end FASTQ
                 fastq1_abs=$(for f in *.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
                 fastq2_abs=''
             fi
@@ -63,7 +63,7 @@ task star {
             fi
         fi
 
-        echo "FASTQs:"
+        echo "FASTQs:" #Mapping multiple files in one run: TO check
         echo $fastq1_abs
         echo $fastq2_abs
 
@@ -118,7 +118,7 @@ task star {
         File chimeric_junctions = "star_out/${prefix}.Chimeric.out.junction.gz"
         File chimeric_bam_file = "star_out/${prefix}.Chimeric.out.sorted.bam"
         File chimeric_bam_index = "star_out/${prefix}.Chimeric.out.sorted.bam.bai"
-        File read_counts = "star_out/${prefix}.ReadsPerGene.out.tab.gz"
+        File read_counts = "star_out/${prefix}.ReadsPerGene.out.tab.gz" 
         File junctions = "star_out/${prefix}.SJ.out.tab.gz"
         File junctions_pass1 = "star_out/${prefix}._STARpass1/${prefix}.SJ.pass1.out.tab.gz"
         Array[File] logs = ["star_out/${prefix}.Log.final.out", "star_out/${prefix}.Log.out", "star_out/${prefix}.Log.progress.out"]
