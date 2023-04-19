@@ -16,18 +16,18 @@ workflow RNA_pipeline {
     String sample_id
 
     #star_v1
-    File star_index= "gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/star_index_1pass.tar.gz"
+    File star_index="gs://ccle_default_params/STAR_genome_GRCh38_noALT_noHLA_noDecoy_ERCC_v29_oh100.tar.gz"
 
     #rnaseqc2_v1
-    File genes_gtf="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf"
+    File genes_gtf="gs://ccle_default_params/references_gtex_gencode.v29.GRCh38.ERCC.genes.collapsed_only.gtf"
 
     #rsem
-    File rsem_reference="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/rsem_index.tar.gz"
+    File rsem_reference="gs://ccle_default_params/rsem_reference_GRCh38_gencode29_ercc.tar.gz"
     
     # mutations
-    File refFasta="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.fasta"
-    File refFastaIndex="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.fasta.fai"
-    File refDict="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/gatk_index/GCF_015476345.1_ZJU1.0_genomic.dict"
+    File refFasta="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta"
+    File refFastaIndex="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.fai"
+    File refDict="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dict"
 
     Array[File] knownVcfs=["gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz",
                             "gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"]

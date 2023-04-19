@@ -63,7 +63,7 @@ task star {
             fi
         fi
 
-        echo "FASTQs:" #Mapping multiple files in one run: TO check
+        echo "FASTQs:"
         echo $fastq1_abs
         echo $fastq2_abs
 
