@@ -3,7 +3,7 @@ version 1.0
 import "star.wdl" as star_v1
 import "rnaseqc2.wdl" as rnaseqc2_v1
 import "rsem.wdl" as rsem_v1
-#import "star_fusion.wdl" as star_fusion
+import "star_fusion.wdl" as star_fusion
 import "rnaseq-germline-snps-indels.wdl" as rnaseq_mutations
 
 
@@ -42,41 +42,41 @@ workflow RNA_pipeline {
     # TODO: put all at the same gencode version (latest)
 
     #star fusion
-    #Array[File] ctat_genome_lib_build_dir_files=[
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/AnnotFilterRule.pm",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/blast_pairs.idx",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/blast_pairs.idx.prev.1553723931",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/fusion_annot_lib.idx",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/pfam_domains.dbm",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.cds",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.gtf",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.gtf.gene_spans",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.gtf.mini.sortu",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.pep",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.prot_info.dbm",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.fai",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/trans.blast.align_coords.align_coords.dat",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/trans.blast.align_coords.align_coords.dbm"
-    #]
-    #Array[File] ref_genome_fa_star_idx_files=[
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/Genome",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/SA",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/SAindex",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/build.ok",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/chrLength.txt",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/chrName.txt",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/chrNameLength.txt",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/chrStart.txt",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/exonGeTrInfo.tab",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/exonInfo.tab",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/geneInfo.tab",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/genomeParameters.txt",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/sjdbInfo.txt",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/sjdbList.fromGTF.out.tab",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/sjdbList.out.tab",
-    #  "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/transcriptInfo.tab"
-    #]
+    Array[File] ctat_genome_lib_build_dir_files=[
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/AnnotFilterRule.pm",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/blast_pairs.idx",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/blast_pairs.idx.prev.1553723931",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/fusion_annot_lib.idx",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/pfam_domains.dbm",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.cds",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.gtf",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.gtf.gene_spans",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.gtf.mini.sortu",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.pep",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_annot.prot_info.dbm",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.fai",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/trans.blast.align_coords.align_coords.dat",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/trans.blast.align_coords.align_coords.dbm"
+    ]
+    Array[File] ref_genome_fa_star_idx_files=[
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/Genome",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/SA",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/SAindex",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/build.ok",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/chrLength.txt",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/chrName.txt",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/chrNameLength.txt",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/chrStart.txt",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/exonGeTrInfo.tab",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/exonInfo.tab",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/geneInfo.tab",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/genomeParameters.txt",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/sjdbInfo.txt",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/sjdbList.fromGTF.out.tab",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/sjdbList.out.tab",
+      "gs://ccle_default_params/references/GRCh38_gencode_v29_CTAT_lib_Mar272019.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa.star.idx/transcriptInfo.tab"
+    ]
 
     #rna_mutect2
     #Boolean run_funcotator=false
@@ -159,14 +159,14 @@ workflow RNA_pipeline {
 
 
   # TODO: give junctions directly to star fusion
-  #call star_fusion.StarFusion as StarFusion {
-  #  input:
-  #    left_fastq=fastq1,
-  #    right_fastq=fastq2,
-  #    prefix=sample_id,
-  #    ctat_genome_lib_build_dir_files=ctat_genome_lib_build_dir_files,
-  #    ref_genome_fa_star_idx_files=ref_genome_fa_star_idx_files
-  #}
+  call star_fusion.StarFusion as StarFusion {
+    input:
+      left_fastq=fastq1,
+      right_fastq=fastq2,
+      prefix=sample_id,
+      ctat_genome_lib_build_dir_files=ctat_genome_lib_build_dir_files,
+      ref_genome_fa_star_idx_files=ref_genome_fa_star_idx_files
+  }
 
   output {
     #star
@@ -189,8 +189,8 @@ workflow RNA_pipeline {
     File genes=rsem.genes
     File isoforms=rsem.isoforms
     #StarFusion
-    #File fusion_predictions=StarFusion.fusion_predictions
-    #File fusion_predictions_abridged=StarFusion.fusion_predictions_abridged
+    File fusion_predictions=StarFusion.fusion_predictions
+    File fusion_predictions_abridged=StarFusion.fusion_predictions_abridged
     # mutations
     File variant_filtered_vcf=rnaseq_mutations.variant_filtered_vcf
     File variant_filtered_vcf_index=rnaseq_mutations.variant_filtered_vcf_index
