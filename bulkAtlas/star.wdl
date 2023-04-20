@@ -49,7 +49,7 @@ task star {
             tar -xvvf ${fastq1}
             fastq1_abs=$(for f in *_R1_*.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
             fastq2_abs=$(for f in *_R2_*.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
-            if [[ $fastq1_abs == *"*_R1_*.fastq*" ]]; then  # no paired-end FASTQs found; check for single-end FASTQ
+            if [[ $fastq1_abs == *"*_R1_*.fastq*" ]] then  # no paired-end FASTQs found; check for single-end FASTQ
                 fastq1_abs=$(for f in *.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
                 fastq2_abs=''
             fi
