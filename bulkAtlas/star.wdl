@@ -45,7 +45,7 @@ task star {
     command {
         set -euo pipefail
 
-        if [[ ${fastq1} == *".tar" || ${fastq1} == *".tar.gz" || ${fastq1} == *".gz"]]; then
+        if [[ ${fastq1} == *".tar" || ${fastq1} == *".tar.gz" || ${fastq1} == *".gz" ]] then
             tar -xvvf ${fastq1}
             fastq1_abs=$(for f in *_R1_*.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
             fastq2_abs=$(for f in *_R2_*.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
@@ -57,7 +57,7 @@ task star {
             # make sure paths are absolute
             fastq1_abs=${fastq1}
             fastq2_abs=${fastq2}
-            if [[ $fastq1_abs != /* ]]; then
+            if [[ $fastq1_abs != /* ]] then
                 fastq1_abs=$PWD/$fastq1_abs
                 fastq2_abs=$PWD/$fastq2_abs
             fi
