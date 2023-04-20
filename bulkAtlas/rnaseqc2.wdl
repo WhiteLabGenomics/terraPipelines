@@ -15,7 +15,7 @@ task rnaseqc2 {
         Int num_threads = 4
         Int num_preempt = 1
     }
-
+    #TODO: strandedness, default=None, choices=['rf', 'fr']
     command {
         set -euo pipefail
         echo $(date +"[%b %d %H:%M:%S] Running RNA-SeQC 2")

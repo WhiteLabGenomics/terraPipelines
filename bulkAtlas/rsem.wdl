@@ -19,7 +19,8 @@ task rsem {
         String? calc_ci
         Int? ci_memory
     }
-
+    # TODO:is_stranded default='false'
+    
     command {
         set -euo pipefail
         mkdir rsem_reference

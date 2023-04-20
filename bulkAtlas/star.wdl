@@ -41,7 +41,7 @@ task star {
         Int num_threads = 16
         Int num_preempt = 1
     }
-
+        # TODO: --outSAMtype', default=['BAM', 'Unsorted']: how can we output a sorted bam?
     command {
         set -euo pipefail
 
