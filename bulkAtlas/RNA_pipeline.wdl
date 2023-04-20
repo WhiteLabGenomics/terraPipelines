@@ -3,8 +3,8 @@ version 1.0
 import "star.wdl" as star_v1
 import "rnaseqc2.wdl" as rnaseqc2_v1
 import "rsem.wdl" as rsem_v1
-import "star_fusion.wdl" as star_fusion
-#import "rnaseq-germline-snps-indels.wdl" as rnaseq_mutations
+#import "star_fusion.wdl" as star_fusion
+import "rnaseq-germline-snps-indels.wdl" as rnaseq_mutations
 
 
 workflow RNA_pipeline {
@@ -159,14 +159,14 @@ workflow RNA_pipeline {
 
 
   # TODO: give junctions directly to star fusion
-  call star_fusion.StarFusion as StarFusion {
-    input:
-      left_fastq=fastq1,
-      right_fastq=fastq2,
-      prefix=sample_id,
-      ctat_genome_lib_build_dir_files=ctat_genome_lib_build_dir_files,
-      ref_genome_fa_star_idx_files=ref_genome_fa_star_idx_files
-  }
+  #call star_fusion.StarFusion as StarFusion {
+  #  input:
+  #    left_fastq=fastq1,
+  #    right_fastq=fastq2,
+  #    prefix=sample_id,
+  #    ctat_genome_lib_build_dir_files=ctat_genome_lib_build_dir_files,
+  #    ref_genome_fa_star_idx_files=ref_genome_fa_star_idx_files
+  #}
 
   output {
     #star
@@ -189,8 +189,8 @@ workflow RNA_pipeline {
     File genes=rsem.genes
     File isoforms=rsem.isoforms
     #StarFusion
-    File fusion_predictions=StarFusion.fusion_predictions
-    File fusion_predictions_abridged=StarFusion.fusion_predictions_abridged
+    #File fusion_predictions=StarFusion.fusion_predictions
+    #File fusion_predictions_abridged=StarFusion.fusion_predictions_abridged
     # mutations
     File variant_filtered_vcf=rnaseq_mutations.variant_filtered_vcf
     File variant_filtered_vcf_index=rnaseq_mutations.variant_filtered_vcf_index
