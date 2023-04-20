@@ -41,15 +41,15 @@ task star {
         Int num_threads = 16
         Int num_preempt = 1
     }
-        # TODO: --outSAMtype', default=['BAM', 'Unsorted']: how can we output a sorted bam?
+
     command {
         set -euo pipefail
 
-        if [ ${fastq1} -eq "*.tar" -o ${fastq1} -eq "*.gz" ]; then
+        if [[ ${fastq1} == *".tar" || ${fastq1} == *".tar.gz" || ${fastq1} == *".gz"]]; then
             tar -xvvf ${fastq1}
             fastq1_abs=$(for f in *_R1_*.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
             fastq2_abs=$(for f in *_R2_*.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
-            if [ $fastq1_abs -eq *"*_R1_*.fastq*" ]; then # no paired-end FASTQs found; check for single-end FASTQ
+            if [[ $fastq1_abs == *"*_R1_*.fastq*" ]]; then  # no paired-end FASTQs found; check for single-end FASTQ
                 fastq1_abs=$(for f in *.fastq*; do echo "$(pwd)/$f"; done | paste -s -d ',')
                 fastq2_abs=''
             fi
@@ -63,7 +63,7 @@ task star {
             fi
         fi
 
-        echo "FASTQs:"
+        echo "FASTQs:" #Mapping multiple files in one run: TO check
         echo $fastq1_abs
         echo $fastq2_abs
 
