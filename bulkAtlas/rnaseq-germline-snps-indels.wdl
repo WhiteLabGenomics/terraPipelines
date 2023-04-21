@@ -33,7 +33,7 @@ workflow RNAseq {
         File refFastaIndex
         File refDict
 
-        String gatk4_docker = "broadinstitute/gatk:latest"
+        String gatk4_docker = "broadinstitute/gatk:4.4.0.0"
         String gatk_path = "/gatk/gatk"
         String star_docker = "quay.io/humancellatlas/secondary-analysis-star:v0.2.2-2.5.3a-40ead6e"
 
@@ -498,7 +498,7 @@ task MarkDuplicates {
     }
 
     runtime {
-        disks: "local-disk " + ((size(input_bam,"GB")+1)*3) + " HDD"
+        disks: "local-disk " + (round(size(input_bam,"GB")+1)*3) + " HDD"
         docker: docker
         memory: "4 GB"
         preemptible: preemptible_count
