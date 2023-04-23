@@ -35,7 +35,8 @@ workflow RNA_pipeline {
                                   "gs://gcp-public-data--broad-references/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi"]
     File dbSnpVcf="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz"
     File dbSnpVcfIndex="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz.tbi"
-    File annotationsGTF="gs://gcp-public-data--broad-references/hg38/v0/gencode.v27.primary_assembly.annotation.gtf"#gs://gatk-test-data/intervals/star.gencode.v19.transcripts.patched_contigs.gtf
+    #File annotationsGTF="gs://gcp-public-data--broad-references/hg38/v0/gencode.v27.primary_assembly.annotation.gtf"#gs://gatk-test-data/intervals/star.gencode.v19.transcripts.patched_contigs.gtf
+    File annotationsGTF="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf"
     # TODO: create a test.wdl.json
     # TODO: create a local_test.wdl.json
     # TODO: add in other side experimental genomes that could be in our files (like ERCC)

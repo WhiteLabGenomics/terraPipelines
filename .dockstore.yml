@@ -8,3 +8,12 @@ workflows:
     authors:
       - name: jkalfon
         email: jkalfon@whitelabgx.com
+
+  - subclass: WDL
+    publish: True
+    primaryDescriptorPath: /bulkAtlas/call_variants_pipeline.wdl
+    testParameterFiles: 
+      - /test.json
+    authors:
+      - name: xliu
+        email: xliui@whitelabgx.com
