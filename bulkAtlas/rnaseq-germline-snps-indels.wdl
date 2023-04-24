@@ -33,7 +33,8 @@ workflow call_variants {
         File refFastaIndex
         File refDict
 
-        String gatk4_docker = "broadinstitute/gatk:4.4.0.0"
+        #String gatk4_docker = "broadinstitute/gatk:4.4.0.0"
+        String gatk4_docker = "broadinstitute/gatk:latest"
         String gatk_path = "/gatk/gatk"
         String star_docker = "quay.io/humancellatlas/secondary-analysis-star:v0.2.2-2.5.3a-40ead6e"
 
@@ -257,17 +258,15 @@ task gtfToCallingIntervals {
         Int preemptible_count
     }
 
-
-
     command <<<
         set -e
 
         Rscript --no-save -<<'RCODE'
-            #gtf = read.table("${gtf}", sep="\t")
-            gcs_link <- gtf
-            file_contents <- gcs_get_object(gcs_link)
-            file_contents <- rawToChar(file_contents)
-            gtf = read.table(text = file_contents, sep="\t")
+            gtf = read.table("${gtf}", sep="\t")
+            #gcs_link <- gtf
+            #file_contents <- gcs_get_object(gcs_link)
+            #file_contents <- rawToChar(file_contents)
+            #gtf = read.table(text = file_contents, sep="\t")
             gtf = read.table(gtf, sep="\t")
             gtf = subset(gtf, V3 == "exon")
             write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), "exome.bed", quote = F, sep="\t", col.names = F, row.names = F)
