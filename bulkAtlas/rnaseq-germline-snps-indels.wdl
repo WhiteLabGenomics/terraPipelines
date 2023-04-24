@@ -75,7 +75,7 @@ workflow call_variants {
     
     call gtfToCallingIntervals {
         input:
-            gtf = genes_gtf,
+            genes_gtf = genes_gtf,
             ref_dict = refDict,
             preemptible_count = preemptible_tries,
             gatk_path = gatk_path,
@@ -245,12 +245,12 @@ workflow call_variants {
 ######### TASKS #########
 ######### TASKS #########
 
-task gtfToCallingIntervals {
+task ToCallingIntervalgtfs {
     input {
-        File gtf
+        File genes_gtf
         File ref_dict
 
-        String output_name = basename(gtf, ".gtf") + ".exons.interval_list"
+        String output_name = basename(genes_gtf, ".gtf") + ".exons.interval_list"
 
         String docker
         String gatk_path
@@ -261,7 +261,7 @@ task gtfToCallingIntervals {
         set -e
 
         Rscript --no-save -<<'RCODE'
-            gtf = read.table("${gtf}", sep="\t")
+            gtf = read.table("${genes_gtf}", sep="\t")
             gtf = read.table(gtf, sep="\t")
             gtf = subset(gtf, V3 == "exon")
             write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), "exome.bed", quote = F, sep="\t", col.names = F, row.names = F)
