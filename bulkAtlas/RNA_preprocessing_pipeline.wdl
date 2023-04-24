@@ -26,9 +26,15 @@ workflow RNA_preprocessing_pipeline {
 
   }
 
-  call fastqc_v1.fastqc as fastqc {
+  call fastqc_v1.fastqc as fastqc1 {
     input:
       seqFile=fastq1,
+      outdirPath=".",
+  }
+
+  call fastqc_v1.fastqc as fastqc2 {
+    input:
+      seqFile=fastq2,
       outdirPath=".",
   }
 
@@ -58,8 +64,10 @@ workflow RNA_preprocessing_pipeline {
 
   output {
     #fastqc
-    File htmlReport = fastqc.htmlReport
-    File reportZip = fastqc.reportZip
+    File htmlReport1 = fastqc1.htmlReport
+    File reportZip1 = fastqc1.reportZip
+    File htmlReport2 = fastqc2.htmlReport
+    File reportZip2 = fastqc2.reportZip
     #star
     File bam_file=star.bam_file
     File bam_index=star.bam_index
