@@ -48,7 +48,7 @@ workflow RNAseq {
         ## Inputs for STAR
         Int? readLength
         File? zippedStarReferences
-        File annotationsGTF
+        File genes_gtf
 
         ## Optional user optimizations
         Int haplotypeScatterCount=6
@@ -75,7 +75,7 @@ workflow RNAseq {
     
     call gtfToCallingIntervals {
         input:
-            gtf = annotationsGTF,
+            gtf = genes_gtf,
             ref_dict = refDict,
             preemptible_count = preemptible_tries,
             gatk_path = gatk_path,
@@ -317,7 +317,7 @@ task SamToFastq {
     runtime {
         docker: docker
         memory: "4 GB"
-        disks: "local-disk " + ((size(unmapped_bam,"GB")+1)*5) + " HDD"
+        disks: "local-disk " + (round((size(unmapped_bam,"GB")+1)*5)) + " HDD"
         preemptible: preemptible_count
     }
 }
@@ -422,7 +422,7 @@ task StarAlign {
 
     runtime {
         docker: docker
-        disks: "local-disk " + ((size(fastq1,"GB")+size(fastq2,"GB")*10)+30+add_to_disk) + " HDD"
+        disks: "local-disk " + ((round(size(fastq1,"GB")+size(fastq2,"GB")*10))+30+add_to_disk) + " HDD"
         memory: (star_mem+1) + " GB"
         cpu: threads
         preemptible: preemptible_count
@@ -463,7 +463,7 @@ task MergeBamAlignment {
 
     runtime {
         docker: docker
-        disks: "local-disk " + ((size(unaligned_bam,"GB")+size(star_bam,"GB")+1)*5) + " HDD"
+        disks: "local-disk " + (round((size(unaligned_bam,"GB")+size(star_bam,"GB")+1)*5)) + " HDD"
         memory: "4 GB"
         preemptible: preemptible_count
     }
@@ -534,7 +534,7 @@ task SplitNCigarReads {
         }
 
     runtime {
-        disks: "local-disk " + ((size(input_bam,"GB")+1)*5 + size(ref_fasta,"GB")) + " HDD"
+        disks: "local-disk " + (round((size(input_bam,"GB")+1)*5 + size(ref_fasta,"GB"))) + " HDD"
         docker: docker
         memory: "4 GB"
         preemptible: preemptible_count
@@ -582,7 +582,7 @@ task BaseRecalibrator {
 
     runtime {
         memory: "6 GB"
-        disks: "local-disk " + (size(input_bam,"GB")*3)+30 + " HDD"
+        disks: "local-disk " + (round(size(input_bam,"GB")*3))+30 + " HDD"
         docker: docker
         preemptible: preemptible_count
     }
@@ -627,7 +627,7 @@ task ApplyBQSR {
 
     runtime {
         memory: "3500 MB"
-        disks: "local-disk " + (size(input_bam,"GB")*4)+30 + " HDD"
+        disks: "local-disk " + (round(size(input_bam,"GB")*4))+30 + " HDD"
         preemptible: preemptible_count
         docker: docker
     }
@@ -676,7 +676,7 @@ task HaplotypeCaller {
     runtime {
         docker: docker
         memory: "6.5 GB"
-        disks: "local-disk " + (size(input_bam,"GB")*2)+30 + " HDD"
+        disks: "local-disk " + (round(size(input_bam,"GB")*2))+30 + " HDD"
         preemptible: preemptible_count
     }
 }
@@ -719,7 +719,7 @@ task VariantFiltration {
     runtime {
         docker: docker
         memory: "3 GB"
-        disks: "local-disk " + (size(input_vcf,"GB")*2)+30 + " HDD"
+        disks: "local-disk " + (round(size(input_vcf,"GB")*2))+30 + " HDD"
         preemptible: preemptible_count
     }
 }
@@ -841,7 +841,7 @@ task RevertSam {
 
     runtime {
         docker: docker
-        disks: "local-disk " + (size(input_bam,"GB")+1)*5 + " HDD"
+        disks: "local-disk " + (round(size(input_bam,"GB")+1))*5 + " HDD"
         memory: "4 GB"
         preemptible: preemptible_count
     }

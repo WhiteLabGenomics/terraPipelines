@@ -15,16 +15,17 @@ workflow RNA_pipeline {
     File fastq2
     String sample_id
 
-    #star_v1
-    File star_index="gs://ccle_default_params/STAR_genome_GRCh38_noALT_noHLA_noDecoy_ERCC_v29_oh100.tar.gz"
 
-    #rnaseqc2_v1
+    #rannotation GTF
     File genes_gtf="gs://ccle_default_params/references_gtex_gencode.v29.GRCh38.ERCC.genes.collapsed_only.gtf"
 
-    #rsem
+    #star_v1 index
+    File star_index="gs://ccle_default_params/STAR_genome_GRCh38_noALT_noHLA_noDecoy_ERCC_v29_oh100.tar.gz"
+
+    #rsem index
     File rsem_reference="gs://ccle_default_params/rsem_reference_GRCh38_gencode29_ercc.tar.gz"
     
-    # mutations
+    # mutations index
     File refFasta="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta"
     File refFastaIndex="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.fasta.fai"
     File refDict="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dict"
@@ -36,7 +37,7 @@ workflow RNA_pipeline {
     File dbSnpVcf="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz"
     File dbSnpVcfIndex="gs://gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz.tbi"
     #File annotationsGTF="gs://gcp-public-data--broad-references/hg38/v0/gencode.v27.primary_assembly.annotation.gtf"#gs://gatk-test-data/intervals/star.gencode.v19.transcripts.patched_contigs.gtf
-    File annotationsGTF="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf"
+    #File annotationsGTF="gs://whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf"
     # TODO: create a test.wdl.json
     # TODO: create a local_test.wdl.json
     # TODO: add in other side experimental genomes that could be in our files (like ERCC)
@@ -143,7 +144,7 @@ workflow RNA_pipeline {
       knownVcfsIndices=knownVcfsIndices,
       dbSnpVcf=dbSnpVcf,
       dbSnpVcfIndex=dbSnpVcfIndex,
-      annotationsGTF=annotationsGTF
+      genes_gtf=genes_gtf
   }
   # TODO: annotate the mutations
   # bcftools? (need to see some vcfs)
