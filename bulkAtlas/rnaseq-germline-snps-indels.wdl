@@ -23,7 +23,7 @@ version 1.0
 ## page at https://hub.docker.com/r/broadinstitute/genomes-in-the-cloud/ for detailed
 ## licensing information pertaining to the included programs. 
 
-workflow RNAseq {
+workflow call_variants {
 
     input {
         File inputBam
