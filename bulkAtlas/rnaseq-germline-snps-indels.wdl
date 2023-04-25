@@ -245,7 +245,7 @@ workflow call_variants {
 ######### TASKS #########
 ######### TASKS #########
 
-task ToCallingIntervalgtfs {
+task gtfToCallingIntervals {
     input {
         File genes_gtf
         File ref_dict
@@ -535,7 +535,7 @@ task SplitNCigarReads {
     runtime {
         disks: "local-disk " + (round((size(input_bam,"GB")+1)*5 + size(ref_fasta,"GB"))) + " HDD"
         docker: docker
-        memory: "4 GB"
+        memory: "6 GB"
         preemptible: preemptible_count
     }
 }
