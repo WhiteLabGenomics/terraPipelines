@@ -75,7 +75,7 @@ workflow call_variants {
     
     call gtfToCallingIntervals {
         input:
-            genes_gtf = genes_gtf,
+            gtf = genes_gtf,
             ref_dict = refDict,
             preemptible_count = preemptible_tries,
             gatk_path = gatk_path,
@@ -246,10 +246,10 @@ workflow call_variants {
 ######### TASKS #########
 task gtfToCallingIntervals {
     input {
-        File genes_gtf
+        File gtf
         File ref_dict
 
-        String output_name = basename(genes_gtf, ".gtf") + ".exons.interval_list"
+        String output_name = basename(gtf, ".gtf") + ".exons.interval_list"
 
         String docker
         String gatk_path
@@ -259,29 +259,28 @@ task gtfToCallingIntervals {
     command <<<
         set -e
 
-        path2gtf=$(echo "${genes_gtf}" | sed 's#gs://#/cromwell_root/#')
-        echo "${path2gtf}"
+        #path2gtf=$(echo "${gtf}" | sed 's#gs://#/cromwell_root/#')
+        #echo "${path2gtf}"
         #echo "${genes_gtf}" #TODO [1] "${genes_gtf}"
-        echo ${genes_gtf}
-        echo genes_gtf
+        #echo ${genes_gtf}
+        #echo genes_gtf
 
         Rscript --no-save -<<'RCODE'
-            #gtf = read.table("${genes_gtf}", sep="\t")
-            gtf = read.table("/cromwell_root/whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf", sep="\t")
-            print("${genes_gtf}")
-            #gtf = read.table(${path2gtf}, sep="\t")
+            gtf = read.table("${gtf}", sep="\t")
+            #gtf = read.table("/cromwell_root/whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf", sep="\t")
+            #print("${gtf}")
+            #gtf = read.table(${path2gtf}, sep="\t") #TODO: doesn't work
             gtf = subset(gtf, V3 == "exon")
             write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), "exome.bed", quote = F, sep="\t", col.names = F, row.names = F)
         RCODE
 
         awk '{print $1 "\t" ($2 - 1) "\t" $3}' exome.bed > exome.fixed.bed
 
-        ${gatk_path}/gatk \  #TODO /cromwell_root/script: line 41: /gatk: Is a directory
+        ${gatk_path} \  #TODO ${gatk_path}/gatk: /cromwell_root/script: line 41: /gatk: Is a directory
             BedToIntervalList \
             -I exome.fixed.bed \
             -O ${output_name} \
             -SD ${ref_dict}
-    
     >>>
 
     output {
