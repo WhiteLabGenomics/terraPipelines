@@ -1,6 +1,7 @@
 version: 1.2
 workflows:
-  - subclass: WDL
+  - name: RNA_pipeline
+    subclass: WDL
     publish: True
     primaryDescriptorPath: /bulkAtlas/RNA_pipeline.wdl
     testParameterFiles:
@@ -9,7 +10,8 @@ workflows:
       - name: jkalfon
         email: jkalfon@whitelabgx.com
 
-  - subclass: WDL
+  - name: RNA_preprocessing_pipeline
+    subclass: WDL
     publish: True
     primaryDescriptorPath: /bulkAtlas/RNA_preprocessing_pipeline.wdl
     testParameterFiles:
@@ -18,7 +20,8 @@ workflows:
       - name: jkalfon
         email: jkalfon@whitelabgx.com
 
-  - subclass: WDL
+  - name: rnaseq-germline-snps-indels
+    subclass: WDL
     publish: True
     primaryDescriptorPath: /bulkAtlas/rnaseq-germline-snps-indels.wdl
     testParameterFiles:
