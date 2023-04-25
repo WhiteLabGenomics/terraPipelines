@@ -261,7 +261,9 @@ task gtfToCallingIntervals {
 
         path2gtf=$(echo "${genes_gtf}" | sed 's#gs://#/cromwell_root/#')
         echo "${path2gtf}"
-        echo "${genes_gtf}"
+        #echo "${genes_gtf}" #TODO [1] "${genes_gtf}"
+        echo ${genes_gtf}
+        echo genes_gtf
 
         Rscript --no-save -<<'RCODE'
             #gtf = read.table("${genes_gtf}", sep="\t")
@@ -274,7 +276,7 @@ task gtfToCallingIntervals {
 
         awk '{print $1 "\t" ($2 - 1) "\t" $3}' exome.bed > exome.fixed.bed
 
-        ${gatk_path}/gatk \
+        ${gatk_path}/gatk \  #TODO /cromwell_root/script: line 41: /gatk: Is a directory
             BedToIntervalList \
             -I exome.fixed.bed \
             -O ${output_name} \
