@@ -1,7 +1,6 @@
 version 1.0
 
 import "fastqc.wdl" as fastqc_v1
-import "multiqc.wdl" as multiqc_v1
 import "star.wdl" as star_v1
 import "rnaseqc2.wdl" as rnaseqc2_v1
 import "rsem.wdl" as rsem_v1

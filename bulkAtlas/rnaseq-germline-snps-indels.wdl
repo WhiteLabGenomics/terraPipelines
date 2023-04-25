@@ -245,7 +245,7 @@ workflow call_variants {
 ######### TASKS #########
 ######### TASKS #########
 
-task ToCallingIntervalgtfs {
+task gtfToCallingIntervals {
     input {
         File genes_gtf
         File ref_dict
@@ -261,7 +261,7 @@ task ToCallingIntervalgtfs {
         set -e
 
         Rscript --no-save -<<'RCODE'
-            gtf = read.table("${genes_gtf}", sep="\t")
+            gtf = read.table(${genes_gtf}, sep="\t")
             gtf = read.table(gtf, sep="\t")
             gtf = subset(gtf, V3 == "exon")
             write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), "exome.bed", quote = F, sep="\t", col.names = F, row.names = F)
@@ -535,7 +535,7 @@ task SplitNCigarReads {
     runtime {
         disks: "local-disk " + (round((size(input_bam,"GB")+1)*5 + size(ref_fasta,"GB"))) + " HDD"
         docker: docker
-        memory: "4 GB"
+        memory: "6 GB"
         preemptible: preemptible_count
     }
 }
