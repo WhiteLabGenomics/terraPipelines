@@ -266,7 +266,7 @@ task gtfToCallingIntervals {
         #echo genes_gtf
 
         Rscript --no-save -<<'RCODE'
-            gtf = read.table("${gtf}", sep="\t")
+            gtf = read.table(${gtf}, sep="\t")
             #gtf = read.table("/cromwell_root/whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf", sep="\t")
             #print("${gtf}")
             #gtf = read.table(${path2gtf}, sep="\t") #TODO: doesn't work
