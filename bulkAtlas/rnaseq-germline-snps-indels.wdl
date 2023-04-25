@@ -259,12 +259,12 @@ task gtfToCallingIntervals {
     command <<<
         set -e
 
-        path2gtf = genes_gtf.replace("gs://", "/cromwell_root/")
+        path2gtf=$(echo "${genes_gtf}" | sed 's#gs://#/cromwell_root/#')
 
         Rscript --no-save -<<'RCODE'
             #gtf = read.table("${genes_gtf}", sep="\t")
             #gtf = read.table("/cromwell_root/whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf", sep="\t")
-            gtf = read.table(${path2gtf}, sep="\t")
+            gtf = read.table("${path2gtf}", sep="\t")
             gtf = subset(gtf, V3 == "exon")
             write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), "exome.bed", quote = F, sep="\t", col.names = F, row.names = F)
         RCODE
