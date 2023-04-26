@@ -262,10 +262,7 @@ task gtfToCallingIntervals {
         ls -lh
         
         Rscript --no-save -<<'RCODE'
-            args <- commandArgs(trailingOnly = TRUE)
-            print("test")
-            print(args)
-            gtf = read.table(args[1], sep="\t")
+            gtf = read.table("${gtf}", sep="\t")
             #gtf = read.table("/cromwell_root/whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf", sep="\t")
             #print("${gtf}")
             gtf = subset(gtf, V3 == "exon")
