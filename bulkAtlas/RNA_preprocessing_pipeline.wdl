@@ -56,8 +56,6 @@ workflow RNA_preprocessing_pipeline {
       transcriptome_bam=star.transcriptome_bam,
       prefix=sample_id,
       rsem_reference=rsem_reference,
-      #is_stranded="false",
-      #paired_end="true"
   }
 
 
