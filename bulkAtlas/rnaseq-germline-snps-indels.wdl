@@ -259,24 +259,17 @@ task gtfToCallingIntervals {
     command <<<
         set -e
 
-        #path2gtf=$(echo "${gtf}" | sed 's#gs://#/cromwell_root/#')
-        #echo "${path2gtf}"
-        #echo "${genes_gtf}" #TODO [1] "${genes_gtf}"
-        #echo ${genes_gtf}
-        #echo genes_gtf
-
         Rscript --no-save -<<'RCODE'
             gtf = read.table("${gtf}", sep="\t")
             #gtf = read.table("/cromwell_root/whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf", sep="\t")
             #print("${gtf}")
-            #gtf = read.table(${path2gtf}, sep="\t") #TODO: doesn't work
             gtf = subset(gtf, V3 == "exon")
             write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), "exome.bed", quote = F, sep="\t", col.names = F, row.names = F)
         RCODE
 
         awk '{print $1 "\t" ($2 - 1) "\t" $3}' exome.bed > exome.fixed.bed
 
-        ${gatk_path} \  #TODO ${gatk_path}/gatk: /cromwell_root/script: line 41: /gatk: Is a directory
+        ${gatk_path} \ 
             BedToIntervalList \
             -I exome.fixed.bed \
             -O ${output_name} \
