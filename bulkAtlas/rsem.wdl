@@ -18,8 +18,8 @@ task rsem {
         String? paired_end
         String? calc_ci
         Int? ci_memory
+
     }
-    # TODO:is_stranded default='false'
     
     command {
         set -euo pipefail
