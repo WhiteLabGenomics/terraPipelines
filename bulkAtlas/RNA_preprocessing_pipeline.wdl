@@ -28,13 +28,13 @@ workflow RNA_preprocessing_pipeline {
   call fastqc_v1.fastqc as fastqc1 {
     input:
       seqFile=fastq1,
-      outdirPath=".",
+      outdirPath="."
   }
 
   call fastqc_v1.fastqc as fastqc2 {
     input:
       seqFile=fastq2,
-      outdirPath=".",
+      outdirPath="."
   }
 
   call star_v1.star as star {
@@ -42,6 +42,7 @@ workflow RNA_preprocessing_pipeline {
       prefix=sample_id,
       fastq1=fastq1,
       fastq2=fastq2,
+      star_index=star_index
   }
 
   call rnaseqc2_v1.rnaseqc2 as rnaseqc2 {
