@@ -60,8 +60,8 @@ task fastqc {
     # This regex chops of the extension and replaces it with _fastqc for
     # the reportdir.
     # Just as fastqc does it.
-    #String reportDir = outdirPath + "/" + sub(name, "\.[^\.]*$", "_fastqc") 
-    String reportDir = "fastqc/" + sub(name, "\.[^\.]*$", "_fastqc")
+    String reportDir = outdirPath + "/" + sub(name, "\.[^\.]*$", "_fastqc") 
+    #String reportDir = "fastqc/" + sub(name, "\.[^\.]*$", "_fastqc")
 
     # We reimplement the perl wrapper here. This has the advantage that it
     # gives us more control over the amount of memory used.
