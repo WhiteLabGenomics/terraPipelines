@@ -61,7 +61,6 @@ task fastqc {
     # the reportdir.
     # Just as fastqc does it.
     String reportDir = outdirPath + "/" + sub(name, "\.[^\.]*$", "_fastqc") 
-    #String reportDir = "fastqc/" + sub(name, "\.[^\.]*$", "_fastqc")
 
     # We reimplement the perl wrapper here. This has the advantage that it
     # gives us more control over the amount of memory used.
