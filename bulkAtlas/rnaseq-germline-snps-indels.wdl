@@ -259,13 +259,17 @@ task gtfToCallingIntervals {
     command <<<
         set -e
 
+        ls -lh
+        
         Rscript --no-save -<<'RCODE'
-            gtf = read.table("${gtf}", sep="\t")
+            args <- commandArgs(trailingOnly = TRUE)
+            print("test")
+            gtf = read.table(args[1], sep="\t")
             #gtf = read.table("/cromwell_root/whitelabgx_references/Anas_platyrhynchos_GCF_015476345.1_v280323/genomic.gtf", sep="\t")
             #print("${gtf}")
             gtf = subset(gtf, V3 == "exon")
             write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), "exome.bed", quote = F, sep="\t", col.names = F, row.names = F)
-        RCODE
+        RCODE ${gtf}
 
         awk '{print $1 "\t" ($2 - 1) "\t" $3}' exome.bed > exome.fixed.bed
 
