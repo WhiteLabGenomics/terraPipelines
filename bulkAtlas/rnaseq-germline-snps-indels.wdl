@@ -260,12 +260,14 @@ task gtfToCallingIntervals {
         set -e
 
         echo """
-            gtf = read.table("${gtf}", sep="\t")
+            args <- commandArgs(trailingOnly = TRUE)
+            gtf = read.table(args, sep="\t")
+            print(args)
             gtf = subset(gtf, V3 == "exon")
             write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), "exome.bed", quote = F, sep="\t", col.names = F, row.names = F)
             """ >> gft2exonBed.R
 
-        Rscript gft2exonBed.R ${gtf}
+        Rscript gft2exonBed.R --args ${gtf}
 
         awk '{print $1 "\t" ($2 - 1) "\t" $3}' exome.bed > exome.fixed.bed
 
