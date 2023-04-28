@@ -93,7 +93,7 @@ workflow RNA_preprocessing_pipeline {
     File fastq1_clipped = fastp.fastq1_clipped
     File fastq2_clipped = fastp.fastq2_clipped
 
-    #fastqc cleaned data #TODO
+    #fastqc cleaned data
     File cleaned_htmlReport1 = cleaned_fastqc1.htmlReport
     File cleaned_reportZip1 = cleaned_fastqc1.reportZip
     File cleaned_htmlReport2 = cleaned_fastqc2.htmlReport
