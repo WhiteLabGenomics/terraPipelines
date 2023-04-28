@@ -20,6 +20,8 @@ task Fastp {
     bash ~{monitoring_script} > monitoring.log &
 
     fastp --in1 ~{fastq1} --in2 ~{fastq2} --out1 ~{output_prefix}_read1.fastq.gz --out2 ~{output_prefix}_read2.fastq.gz \
+    --json ~{output_prefix}_fastp.json \
+    --html ~{output_prefix}_fastp.html \
     --disable_quality_filtering \
     --disable_length_filtering \
     --adapter_fasta ~{adapter_fasta} \
@@ -40,6 +42,8 @@ task Fastp {
     File monitoring_log = "monitoring.log"
     File fastq1_clipped = output_prefix + "_read1.fastq.gz"
     File fastq2_clipped = output_prefix + "_read2.fastq.gz"
+    File raport_json = output_prefix + "_fastp.json"
+    File raport_html = output_prefix + "_fastp.html"
   }
 }
 
@@ -61,6 +65,8 @@ workflow fastp_workflow {
     File monitoring_log = Fastp.monitoring_log
     File fastq1_clipped = Fastp.fastq1_clipped
     File fastq2_clipped = Fastp.fastq2_clipped
+    File raport_json = Fastp.raport_json
+    File raport_html = Fastp.raport_html
     }
 }
 

@@ -30,13 +30,11 @@ workflow RNA_preprocessing_pipeline {
   call fastqc_v1.fastqc as raw_fastqc1 {
     input:
       seqFile=fastq1,
-      outdirPath="."
   }
 
   call fastqc_v1.fastqc as raw_fastqc2 {
     input:
       seqFile=fastq2,
-      outdirPath="."
   }
 
   call fastp_v1.Fastp as fastp {
@@ -49,13 +47,11 @@ workflow RNA_preprocessing_pipeline {
   call fastqc_v1.fastqc as cleaned_fastqc1 {
     input:
       seqFile=fastp.fastq1_clipped,
-      outdirPath="."
   }
 
   call fastqc_v1.fastqc as cleaned_fastqc2 {
     input:
       seqFile=fastp.fastq2_clipped,
-      outdirPath="."
   }
 
   call star_v1.star as star {
@@ -92,6 +88,8 @@ workflow RNA_preprocessing_pipeline {
     File monitoring_log = fastp.monitoring_log
     File fastq1_clipped = fastp.fastq1_clipped
     File fastq2_clipped = fastp.fastq2_clipped
+    File raport_json = fastp.raport_json
+    File raport_html = fastp.raport_html
 
     #fastqc cleaned data
     File cleaned_htmlReport1 = cleaned_fastqc1.htmlReport
@@ -120,7 +118,7 @@ workflow RNA_preprocessing_pipeline {
     #rsem
     File genes=rsem.genes
     File isoforms=rsem.isoforms
-
   }
+
 }
 
