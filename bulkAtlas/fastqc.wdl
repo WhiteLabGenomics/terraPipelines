@@ -23,7 +23,7 @@ version 1.0
 task fastqc {
     input {
         File seqFile
-        String outdirPath
+        String outdirPath="."
         Boolean casava = false
         Boolean nano = false
         Boolean noFilter = false
@@ -60,18 +60,18 @@ task fastqc {
     # This regex chops of the extension and replaces it with _fastqc for
     # the reportdir.
     # Just as fastqc does it.
-    String reportDir = outdirPath + "/" + sub(name, "\.[^\.]*$", "_fastqc") 
+    String reportDir = "./" + sub(name, "\.[^\.]*$", "_fastqc") 
 
     # We reimplement the perl wrapper here. This has the advantage that it
     # gives us more control over the amount of memory used.
     command <<<
         set -e
-        mkdir -p "~{outdirPath}"
+        mkdir -p .
         FASTQC_DIR="/usr/local/opt/fastqc-0.11.9"
         export CLASSPATH="$FASTQC_DIR:$FASTQC_DIR/sam-1.103.jar:$FASTQC_DIR/jbzip2-0.9.jar:$FASTQC_DIR/cisd-jhdf5.jar"
         java -Djava.awt.headless=true -XX:ParallelGCThreads=1 \
         -Xms200M -Xmx~{javaXmx} \
-        ~{"-Dfastqc.output_dir=" + outdirPath} \
+        -Dfastqc.output_dir=. \
         ~{true="-Dfastqc.casava=true" false="" casava} \
         ~{true="-Dfastqc.nano=true" false="" nano} \
         ~{true="-Dfastqc.nofilter=true" false="" noFilter} \
@@ -106,7 +106,6 @@ task fastqc {
     parameter_meta {
         # inputs
         seqFile: {description: "A fastq file.", category: "required"}
-        outdirPath: {description: "The path to write the output to.", catgory: "required"}
         casava: {description: "Equivalent to fastqc's --casava flag.", category: "advanced"}
         nano: {description: "Equivalent to fastqc's --nano flag.", category: "advanced"}
         noFilter: {description: "Equivalent to fastqc's --nofilter flag.", category: "advanced"}
@@ -187,13 +186,11 @@ task GetConfiguration {
 workflow fastqc_workflow {
     input {
         File seqFile
-        String outdirPath
     }
 
     call fastqc {
         input:
             seqFile = seqFile,
-            outdirPath = outdirPath
     }
 
     output {
