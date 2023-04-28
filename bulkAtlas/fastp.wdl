@@ -58,7 +58,7 @@ workflow fastp_workflow {
         input:
             fastq1 = fastq1,
             fastq2 = fastq2,
-            output_prefix = output_prefix,
+            output_prefix = output_prefix
     }
 
     output {

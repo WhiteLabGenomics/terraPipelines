@@ -59,18 +59,18 @@ task fastqc {
     # This regex chops of the extension and replaces it with _fastqc for
     # the reportdir.
     # Just as fastqc does it.
-    String reportDir = + "./" + sub(name, "\.[^\.]*$", "_fastqc") 
+    String reportDir = "./" + sub(name, "\.[^\.]*$", "_fastqc") 
 
     # We reimplement the perl wrapper here. This has the advantage that it
     # gives us more control over the amount of memory used.
     command {
         set -e
-        mkdir -p "~{.}"
+        mkdir -p "~/."
         FASTQC_DIR="/usr/local/opt/fastqc-0.11.9"
         export CLASSPATH="$FASTQC_DIR:$FASTQC_DIR/sam-1.103.jar:$FASTQC_DIR/jbzip2-0.9.jar:$FASTQC_DIR/cisd-jhdf5.jar"
         java -Djava.awt.headless=true -XX:ParallelGCThreads=1 \
         -Xms200M -Xmx~{javaXmx} \
-        ~{"-Dfastqc.output_dir=" + .} \
+        ~{"-Dfastqc.output_dir=" + '.'} \
         ~{true="-Dfastqc.casava=true" false="" casava} \
         ~{true="-Dfastqc.nano=true" false="" nano} \
         ~{true="-Dfastqc.nofilter=true" false="" noFilter} \
