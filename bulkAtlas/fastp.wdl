@@ -1,5 +1,7 @@
+version 1.0
 # Adapter clipping
 # https://github.com/OpenGene/fastp
+
 task Fastp {
   input {
     File fastq1
@@ -39,4 +41,26 @@ task Fastp {
     File fastq1_clipped = output_prefix + "_read1.fastq.gz"
     File fastq2_clipped = output_prefix + "_read2.fastq.gz"
   }
+}
+
+workflow fastp_workflow {
+    input {
+        File fastq1
+        File fastq2
+        String output_prefix
+    }
+
+    call Fastp {
+        input:
+            fastq1 = fastq1,
+            fastq2 = fastq2,
+            output_prefix = output_prefix,
+    }
+
+    output {
+    File monitoring_log = Fastp.monitoring_log
+    File fastq1_clipped = Fastp.fastq1_clipped
+    File fastq2_clipped = Fastp.fastq2_clipped
+    }
+}
 

@@ -1,7 +1,7 @@
 version 1.0
 
 import "fastqc.wdl" as fastqc_v1
-import "trimgalore.wdl" as trimgalore_v1
+import "fastp.wdl" as fastp_v1
 import "star.wdl" as star_v1
 import "rnaseqc2.wdl" as rnaseqc2_v1
 import "rsem.wdl" as rsem_v1
@@ -14,7 +14,6 @@ workflow RNA_preprocessing_pipeline {
     File fastq1
     File fastq2
     String sample_id
-    String? trimgalore_path_override ##TODO
 
     #rannotation GTF
     File genes_gtf="gs://ccle_default_params/references_gtex_gencode.v29.GRCh38.ERCC.genes.collapsed_only.gtf"
@@ -40,30 +39,30 @@ workflow RNA_preprocessing_pipeline {
       outdirPath="."
   }
 
-  call trimgalore_v1.trimgalore as trimgalore {
+  call fastp_v1.Fastp as fastp {
       input:
-          fastq_1 = fastq1,
-          fastq_2 = fastq2,
-          trimgalore_path_override = trimgalore_path_override ## TODO
+        fastq1 = fastq1,
+        fastq2 = fastq2,
+        output_prefix = sample_id
     }
 
   call fastqc_v1.fastqc as cleaned_fastqc1 {
     input:
-      seqFile=trimgalore.trim_1,
+      seqFile=fastp.fastq1_clipped,
       outdirPath="."
   }
 
   call fastqc_v1.fastqc as cleaned_fastqc2 {
     input:
-      seqFile=trimgalore.trim_2,
+      seqFile=fastp.fastq2_clipped,
       outdirPath="."
   }
 
   call star_v1.star as star {
     input:
       prefix=sample_id,
-      fastq1=trimgalore.trim_1,
-      fastq2=trimgalore.trim_2,
+      fastq1=fastp.fastq1_clipped,
+      fastq2=fastp.fastq2_clipped,
       star_index=star_index
   }
 
@@ -89,13 +88,12 @@ workflow RNA_preprocessing_pipeline {
     File raw_htmlReport2 = raw_fastqc2.htmlReport
     File raw_reportZip2 = raw_fastqc2.reportZip
 
-    #trimgalore
-    File trim_1 = trimgalore.trim_1
-    File trim_2 = trimgalore.trim_2
-    File trim_stats_1 = trimgalore.stats_1
-    File trim_stats_2 = trimgalore.stats_2
+    #fastp
+    File monitoring_log = fastp.monitoring_log
+    File fastq1_clipped = fastp.fastq1_clipped
+    File fastq2_clipped = fastp.fastq2_clipped
 
-    #fastqc cleaned data
+    #fastqc cleaned data #TODO
     File cleaned_htmlReport1 = cleaned_fastqc1.htmlReport
     File cleaned_reportZip1 = cleaned_fastqc1.reportZip
     File cleaned_htmlReport2 = cleaned_fastqc2.htmlReport
