@@ -271,7 +271,7 @@ write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), 'exo
         
         awk '${cmd}' exome.bed > exome.fixed.bed
 
-        ${gatk_path} \ 
+        ${gatk_path} \
             BedToIntervalList \
             -I exome.fixed.bed \
             -O ${output_name} \
