@@ -44,8 +44,7 @@ task fastqc {
         # weird edge case fastq's.
         String javaXmx="1750M"
         Int threads = 1
-        String memory = "2GiB"
-        Int timeMinutes = 1 + ceil(size(seqFile, "G")) * 4
+        Int timeMinutes = 10 + ceil(size(seqFile, "G")) * 4
         String dockerImage = "quay.io/biocontainers/fastqc:0.11.9--0"
 
         Array[File]? noneArray
@@ -63,6 +62,10 @@ task fastqc {
 
     # We reimplement the perl wrapper here. This has the advantage that it
     # gives us more control over the amount of memory used.
+
+    Int memory_mb =  ceil(1.5*size(fastq1, "MiB")) + 8192 # Experimentally determined formula for memory allocation
+    Int disk_size_gb = 5*ceil(size(fastq1, "GiB")) + 128
+
     command {
         set -e
         mkdir -p "~/."
@@ -98,7 +101,8 @@ task fastqc {
 
     runtime {
         cpu: threads
-        memory: memory
+        memory: "~{memory_mb} MiB"
+        disks: "local-disk ~{disk_size_gb} HDD"
         time_minutes: timeMinutes
         docker: dockerImage
     }
