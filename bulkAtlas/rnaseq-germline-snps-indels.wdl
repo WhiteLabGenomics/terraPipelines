@@ -265,7 +265,7 @@ task gtfToCallingIntervals {
 gtf = read.table(args[2], sep='	')
 gtf = subset(gtf, V3 == 'exon')
 write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), 'exome.bed', quote = F, sep='	', col.names = F, row.names = F)
-""" > gft2exonBed.R
+""" > gtf2exonBed.R
 
         Rscript gtf2exonBed.R --args ${gtf}
         
