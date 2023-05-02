@@ -256,6 +256,8 @@ task gtfToCallingIntervals {
         Int preemptible_count
     }
 
+    String cmd='{print $1 "\t" ($2 - 1) "\t" $3}'
+
     command {
         set -e
 
@@ -268,9 +270,8 @@ task gtfToCallingIntervals {
             """ >> gft2exonBed.R
 
         Rscript gft2exonBed.R --args ${gtf}
-        #Rscript analysis.R --files=${sep=',' files}
         
-        awk '{print $1 "\t" ($2 - 1) "\t" $3}' exome.bed > exome.fixed.bed
+        awk ${cmd} exome.bed > exome.fixed.bed
 
         ${gatk_path} \ 
             BedToIntervalList \
@@ -395,7 +396,7 @@ task StarAlign {
         Int preemptible_count
     }
 
-    command <<<
+    command {
         set -e
 
         tar -xvzf ${star_genome_refs_zipped}
@@ -411,7 +412,7 @@ task StarAlign {
         --limitBAMsortRAM ${star_mem+"000000000"} \
         --limitOutSJcollapsed ${default=1000000 star_limitOutSJcollapsed} \
         --outFileNamePrefix ${base_name}.
-    >>>
+    }
 
     output {
         File output_bam = "${base_name}.Aligned.sortedByCoord.out.bam"
