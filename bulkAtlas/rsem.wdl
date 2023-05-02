@@ -7,9 +7,9 @@ task rsem {
         File rsem_reference
         String prefix
 
-        Int memory = 128
-        Int disk_space = 500
-        Int num_threads = 32
+        Int memory = 24
+        Int disk_space = 50
+        Int num_threads = 8
         Int num_preempt = 1
 
         Int max_frag_len = 1000
@@ -18,8 +18,10 @@ task rsem {
         String? paired_end
         String? calc_ci
         Int? ci_memory
-
     }
+
+    Int tot_memory =  memory + ceil(size(transcriptome_bam, "GiB")) # Experimentally determined formula for memory allocation
+    Int tot_disk_space = disk_space + 5 * ceil(size(transcriptome_bam, "GiB"))
     
     command {
         set -euo pipefail
@@ -49,8 +51,8 @@ task rsem {
 
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V10"
-        memory: "${memory}GB"
-        disks: "local-disk ${disk_space} HDD"
+        memory: "${tot_memory}GB"
+        disks: "local-disk ${tot_disk_space} HDD"
         cpu: "${num_threads}"
         preemptible: "${num_preempt}"
     }
