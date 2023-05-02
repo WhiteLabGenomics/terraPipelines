@@ -256,7 +256,7 @@ task gtfToCallingIntervals {
         Int preemptible_count
     }
 
-    String cmd='"{print $1 "\t" ($2 - 1) "\t" $3}"'
+    String cmd='"{print $1 "\t" ($2 - 1) "\t" $3}\"'
 
     command {
         set -e
@@ -565,7 +565,7 @@ task BaseRecalibrator {
         Int preemptible_count
     }
 
-    command {
+    command <<<
         ${gatk_path} --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -XX:+PrintFlagsFinal \
             -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCDetails \
             -Xloggc:gc_log.log -Xms4000m" \
@@ -576,7 +576,7 @@ task BaseRecalibrator {
             -O ${recal_output_file} \
             -known-sites ${dbSNP_vcf} \
             -known-sites ${sep=" --known-sites " known_indels_sites_VCFs}
-    }
+    >>>
 
     output {
         File recalibration_report = recal_output_file
