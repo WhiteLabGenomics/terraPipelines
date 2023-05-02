@@ -26,17 +26,6 @@ workflow RNA_preprocessing_pipeline {
 
   }
 
-
-  call fastqc_v1.fastqc as raw_fastqc1 {
-    input:
-      seqFile=fastq1,
-  }
-
-  call fastqc_v1.fastqc as raw_fastqc2 {
-    input:
-      seqFile=fastq2,
-  }
-
   call fastp_v1.Fastp as fastp {
       input:
         fastq1 = fastq1,
@@ -78,12 +67,6 @@ workflow RNA_preprocessing_pipeline {
 
 
   output {
-    #fastqc raw data
-    File raw_htmlReport1 = raw_fastqc1.htmlReport
-    File raw_reportZip1 = raw_fastqc1.reportZip
-    File raw_htmlReport2 = raw_fastqc2.htmlReport
-    File raw_reportZip2 = raw_fastqc2.reportZip
-
     #fastp
     File monitoring_log = fastp.monitoring_log
     File fastq1_clipped = fastp.fastq1_clipped
