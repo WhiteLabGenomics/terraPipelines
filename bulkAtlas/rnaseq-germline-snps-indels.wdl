@@ -288,40 +288,6 @@ write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), 'exo
     }
 }
 
-#NOTE: assuming aggregated bams & paired end fastqs
-task SamToFastq {
-    input {
-        File unmapped_bam
-        String base_name
-
-        String gatk_path
-
-        String docker
-        Int preemptible_count
-    }
-
-    command {
-        ${gatk_path} \
-            SamToFastq \
-            --INPUT ${unmapped_bam} \
-            --VALIDATION_STRINGENCY SILENT \
-            --FASTQ ${base_name}.1.fastq.gz \
-            --SECOND_END_FASTQ ${base_name}.2.fastq.gz
-    }
-
-    output {
-        File fastq1 = "${base_name}.1.fastq.gz"
-        File fastq2 = "${base_name}.2.fastq.gz"
-    }
-
-    runtime {
-        docker: docker
-        memory: "4 GB"
-        disks: "local-disk " + (round((size(unmapped_bam,"GB")+1)*5)) + " HDD"
-        preemptible: preemptible_count
-    }
-}
-
 task MarkDuplicates {
     input {
 
