@@ -36,11 +36,14 @@ task star {
         Int chimOutJunctionFormat = 1
         File? sjdbFileChrStartEnd
 
-        Int memory = 64
-        Int disk_space = 500
+        Int memory = 60
+        Int disk_space = 100
         Int num_threads = 16
         Int num_preempt = 1
     }
+
+    Int tot_memory =  memory + ceil(size(fastq1, "GiB")+size(fastq2, "GiB")) # Experimentally determined formula for memory allocation
+    Int tot_disk_space = disk_space + 5 * ceil(size(fastq1, "GiB")+size(fastq2, "GiB"))
 
     command {
         set -euo pipefail
@@ -126,8 +129,8 @@ task star {
 
     runtime {
         docker: "gcr.io/broad-cga-francois-gtex/gtex_rnaseq:V10"
-        memory: "${memory}GB"
-        disks: "local-disk ${disk_space} HDD"
+        memory: "${tot_memory}GB"
+        disks: "local-disk ${tot_disk_space} HDD"
         cpu: "${num_threads}"
         preemptible: "${num_preempt}"
     }
