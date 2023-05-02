@@ -256,7 +256,7 @@ task gtfToCallingIntervals {
         Int preemptible_count
     }
 
-    String cmd='{print $1 "\t" ($2 - 1) "\t" $3}'
+    String cmd='"{print $1 "\t" ($2 - 1) "\t" $3}"'
 
     command {
         set -e
