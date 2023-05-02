@@ -256,18 +256,16 @@ task gtfToCallingIntervals {
         Int preemptible_count
     }
 
-    String cmd='"{print $1 "\t" ($2 - 1) "\t" $3}\"'
+    String cmd='"{print $1 \'\t\' ($2 - 1) \'\t\' $3}"'
 
     command {
         set -e
 
-        echo """
-            args <- commandArgs(trailingOnly = TRUE)
-            gtf = read.table(args, sep="\t")
-            print(args)
-            gtf = subset(gtf, V3 == "exon")
-            write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), "exome.bed", quote = F, sep="\t", col.names = F, row.names = F)
-            """ >> gft2exonBed.R
+        echo """args <- commandArgs(trailingOnly = TRUE)
+gtf = read.table(args[2], sep='	')
+gtf = subset(gtf, V3 == 'exon')
+write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), 'exome.bed', quote = F, sep='	', col.names = F, row.names = F)
+""" > gft2exonBed.R
 
         Rscript gft2exonBed.R --args ${gtf}
         
