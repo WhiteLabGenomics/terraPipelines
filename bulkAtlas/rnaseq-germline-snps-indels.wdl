@@ -256,7 +256,7 @@ task gtfToCallingIntervals {
         Int preemptible_count
     }
 
-    String cmd='"{print $1 \"\t\" ($2 - 1) \"\t\" $3}"'
+    String cmd='{print $1 \"\t\" ($2 - 1) \"\t\" $3}'
 
     command {
         set -e
@@ -269,7 +269,7 @@ write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), 'exo
 
         Rscript gtf2exonBed.R --args ${gtf}
         
-        awk ${cmd} exome.bed > exome.fixed.bed
+        awk "${cmd}" exome.bed > exome.fixed.bed
 
         ${gatk_path} \ 
             BedToIntervalList \
