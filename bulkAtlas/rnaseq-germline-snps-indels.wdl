@@ -263,13 +263,12 @@ task gtfToCallingIntervals {
 
         echo """
             args <- commandArgs(trailingOnly = TRUE)
-            gtf = read.table(args, sep="\t")
-            print(args)
+            gtf = read.table(args[1], sep="\t")
             gtf = subset(gtf, V3 == "exon")
             write.table(data.frame(chrom=gtf[,'V1'], start=gtf[,'V4'], end=gtf[,'V5']), "exome.bed", quote = F, sep="\t", col.names = F, row.names = F)
-            """ >> gft2exonBed.R
+            """ >> gtf2exonBed.R
 
-        Rscript gft2exonBed.R --args ${gtf}
+        Rscript gtf2exonBed.R --args ${gtf}
         
         awk ${cmd} exome.bed > exome.fixed.bed
 
@@ -565,7 +564,7 @@ task BaseRecalibrator {
         Int preemptible_count
     }
 
-    command <<<
+    command {
         ${gatk_path} --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -XX:+PrintFlagsFinal \
             -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCDetails \
             -Xloggc:gc_log.log -Xms4000m" \
@@ -576,7 +575,7 @@ task BaseRecalibrator {
             -O ${recal_output_file} \
             -known-sites ${dbSNP_vcf} \
             -known-sites ${sep=" --known-sites " known_indels_sites_VCFs}
-    >>>
+    }
 
     output {
         File recalibration_report = recal_output_file
