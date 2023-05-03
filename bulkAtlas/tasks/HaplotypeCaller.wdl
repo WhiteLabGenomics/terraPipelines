@@ -1,7 +1,7 @@
 version 1.0
 
 workflow run_HaplotypeCaller {
-  call HaplotypeCaller
+    call HaplotypeCaller
 }
 
 task HaplotypeCaller {
@@ -17,8 +17,8 @@ task HaplotypeCaller {
         File ref_fasta
         File ref_fasta_index
 
-        File dbSNP_vcf
-        File dbSNP_vcf_index
+        File? dbSNP_vcf
+        File? dbSNP_vcf_index
 
         String gatk_path
         String docker
@@ -26,6 +26,8 @@ task HaplotypeCaller {
 
         Int? stand_call_conf
     }
+    
+    String dbSNP_args = if defined(dbSNP_vcf) then "--dbsnp " + dbSNP_vcf + " " else ""
 
     command {
         ${gatk_path} --java-options "-Xms6000m -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
@@ -34,9 +36,10 @@ task HaplotypeCaller {
         -I ${input_bam} \
         -L ${interval_list} \
         -O ${base_name}.vcf.gz \
+        ${dbSNP_args}\
         -dont-use-soft-clipped-bases \
         --standard-min-confidence-threshold-for-calling ${default=20 stand_call_conf} \
-        --dbsnp ${dbSNP_vcf}
+        
     }
 
     output {

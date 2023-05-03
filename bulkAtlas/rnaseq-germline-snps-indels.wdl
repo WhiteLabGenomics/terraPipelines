@@ -51,8 +51,8 @@ workflow call_variants {
         Array[File] knownVcfs
         Array[File] knownVcfsIndices
 
-        File dbSnpVcf
-        File dbSnpVcfIndex
+        File? dbSnpVcf
+        File? dbSnpVcfIndex
 
         Int? minConfidenceForVariantCalling
 
@@ -116,37 +116,39 @@ workflow call_variants {
             gatk_path = gatk_path
     }
 
+    # if dbSNP exists:
+    Boolean canDoBQSR = defined(dbSnpVcf) && defined(dbSnpVcfIndex)
+    if(canDoBQSR){
+        call BaseRecalibrator_task.BaseRecalibrator as BaseRecalibrator {
+            input:
+                input_bam = SplitNCigarReads.output_bam,
+                input_bam_index = SplitNCigarReads.output_bam_index,
+                recal_output_file = sampleName + ".recal_data.csv",
+                dbSNP_vcf = dbSnpVcf,
+                dbSNP_vcf_index = dbSnpVcfIndex,
+                known_indels_sites_VCFs = knownVcfs,
+                known_indels_sites_indices = knownVcfsIndices,
+                ref_dict = refDict,
+                ref_fasta = refFasta,
+                ref_fasta_index = refFastaIndex,
+                preemptible_count = preemptible_tries,
+                docker = gatk4_docker,
+                gatk_path = gatk_path
+        }
 
-    call BaseRecalibrator_task.BaseRecalibrator as BaseRecalibrator {
-        input:
-            input_bam = SplitNCigarReads.output_bam,
-            input_bam_index = SplitNCigarReads.output_bam_index,
-            recal_output_file = sampleName + ".recal_data.csv",
-            dbSNP_vcf = dbSnpVcf,
-            dbSNP_vcf_index = dbSnpVcfIndex,
-            known_indels_sites_VCFs = knownVcfs,
-            known_indels_sites_indices = knownVcfsIndices,
-            ref_dict = refDict,
-            ref_fasta = refFasta,
-            ref_fasta_index = refFastaIndex,
-            preemptible_count = preemptible_tries,
-            docker = gatk4_docker,
-            gatk_path = gatk_path
-    }
-
-    call ApplyBQSR_task.ApplyBQSR as ApplyBQSR {
-        input:
-            input_bam =  SplitNCigarReads.output_bam,
-            input_bam_index = SplitNCigarReads.output_bam_index,
-            base_name = sampleName + ".aligned.duplicates_marked.recalibrated",
-            ref_fasta = refFasta,
-            ref_fasta_index = refFastaIndex,
-            ref_dict = refDict,
-            recalibration_report = BaseRecalibrator.recalibration_report,
-            preemptible_count = preemptible_tries,
-            docker = gatk4_docker,
-            gatk_path = gatk_path
-    }
+        call ApplyBQSR_task.ApplyBQSR as ApplyBQSR {
+            input:
+                input_bam =  SplitNCigarReads.output_bam,
+                input_bam_index = SplitNCigarReads.output_bam_index,
+                base_name = sampleName + ".aligned.duplicates_marked.recalibrated",
+                ref_fasta = refFasta,
+                ref_fasta_index = refFastaIndex,
+                ref_dict = refDict,
+                recalibration_report = BaseRecalibrator.recalibration_report,
+                preemptible_count = preemptible_tries,
+                docker = gatk4_docker,
+                gatk_path = gatk_path
+        }
 
 
     call ScatterIntervalList_task.ScatterIntervalList as ScatterIntervalList {
@@ -162,8 +164,8 @@ workflow call_variants {
     scatter (interval in ScatterIntervalList.out) {
         call HaplotypeCaller_task.HaplotypeCaller as HaplotypeCaller {
             input:
-                input_bam = ApplyBQSR.output_bam,
-                input_bam_index = ApplyBQSR.output_bam_index,
+                input_bam = if canDoBQSR then ApplyBQSR.output_bam else SplitNCigarReads.output_bam,
+                input_bam_index = if canDoBQSR then ApplyBQSR.output_bam_index else SplitNCigarReads.output_bam_index,
                 base_name = sampleName + ".hc",
                 interval_list = interval,
                 ref_fasta = refFasta,
