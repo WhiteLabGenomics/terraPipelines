@@ -48,8 +48,8 @@ workflow call_variants {
         String gatk_path = "/gatk/gatk"
         String star_docker = "quay.io/humancellatlas/secondary-analysis-star:v0.2.2-2.5.3a-40ead6e"
 
-        Array[File] knownVcfs
-        Array[File] knownVcfsIndices
+        Array[File]? knownVcfs
+        Array[File]? knownVcfsIndices
 
         File? dbSnpVcf
         File? dbSnpVcfIndex

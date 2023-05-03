@@ -14,8 +14,8 @@ task BaseRecalibrator {
 
         File dbSNP_vcf
         File dbSNP_vcf_index
-        Array[File] known_indels_sites_VCFs
-        Array[File] known_indels_sites_indices
+        Array[File]? known_indels_sites_VCFs
+        Array[File]? known_indels_sites_indices
 
         File ref_dict
         File ref_fasta
@@ -26,7 +26,7 @@ task BaseRecalibrator {
         String docker
         Int preemptible_count
     }
-
+    String known_sites_arg = if defined(known_indels_sites_VCFs) then " -known-sites " else ""
     command {
         ${gatk_path} --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -XX:+PrintFlagsFinal \
             -XX:+PrintGCDetails \
@@ -36,8 +36,8 @@ task BaseRecalibrator {
             -I ${input_bam} \
             --use-original-qualities \
             -O ${recal_output_file} \
-            -known-sites ${dbSNP_vcf} \
-            -known-sites ${sep=" --known-sites " known_indels_sites_VCFs}
+            -known-sites ${dbSNP_vcf}\
+            ${known_sites_arg}${default="" sep=" --known-sites " known_indels_sites_VCFs}
     }
 
     output {
