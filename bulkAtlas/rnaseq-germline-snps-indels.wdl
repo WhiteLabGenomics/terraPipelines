@@ -124,8 +124,8 @@ workflow call_variants {
                 input_bam = SplitNCigarReads.output_bam,
                 input_bam_index = SplitNCigarReads.output_bam_index,
                 recal_output_file = sampleName + ".recal_data.csv",
-                dbSNP_vcf = dbSnpVcf,
-                dbSNP_vcf_index = dbSnpVcfIndex,
+                dbSNP_vcf = select_first([dbSnpVcf]),
+                dbSNP_vcf_index = select_first([dbSnpVcfIndex]),
                 known_indels_sites_VCFs = knownVcfs,
                 known_indels_sites_indices = knownVcfsIndices,
                 ref_dict = refDict,
@@ -149,6 +149,7 @@ workflow call_variants {
                 docker = gatk4_docker,
                 gatk_path = gatk_path
         }
+    }
 
 
     call ScatterIntervalList_task.ScatterIntervalList as ScatterIntervalList {
@@ -164,8 +165,8 @@ workflow call_variants {
     scatter (interval in ScatterIntervalList.out) {
         call HaplotypeCaller_task.HaplotypeCaller as HaplotypeCaller {
             input:
-                input_bam = if canDoBQSR then ApplyBQSR.output_bam else SplitNCigarReads.output_bam,
-                input_bam_index = if canDoBQSR then ApplyBQSR.output_bam_index else SplitNCigarReads.output_bam_index,
+                input_bam = select_first([ApplyBQSR.output_bam, SplitNCigarReads.output_bam]),
+                input_bam_index = select_first([ApplyBQSR.output_bam_index, SplitNCigarReads.output_bam_index]),
                 base_name = sampleName + ".hc",
                 interval_list = interval,
                 ref_fasta = refFasta,
@@ -241,8 +242,6 @@ workflow call_variants {
     }
 
     output {
-        File recalibrated_bam = ApplyBQSR.output_bam
-        File recalibrated_bam_index = ApplyBQSR.output_bam_index
         File merged_vcf = MergeVCFs.output_vcf
         File merged_vcf_index = MergeVCFs.output_vcf_index
         File variant_filtered_vcf = VariantFiltration.output_vcf
