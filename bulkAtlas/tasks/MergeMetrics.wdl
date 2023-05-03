@@ -1,3 +1,9 @@
+version 1.0
+
+workflow run_MergeMetrics {
+  call MergeMetrics
+} 
+
 task MergeMetrics {
   input {
     File alignment_summary_metrics

@@ -1,8 +1,6 @@
 version 1.0
 
-import "star.wdl" as star_v1
-import "rnaseqc2.wdl" as rnaseqc2_v1
-import "rsem.wdl" as rsem_v1
+import "RNA_preprocessing_pipeline.wdl" as RNA_preprocessing
 #import "star_fusion.wdl" as star_fusion
 import "rnaseq-germline-snps-indels.wdl" as rnaseq_mutations
 
@@ -19,7 +17,7 @@ workflow RNA_pipeline {
     #rannotation GTF
     File genes_gtf="gs://ccle_default_params/references_gtex_gencode.v29.GRCh38.ERCC.genes.collapsed_only.gtf"
 
-    #star_v1 index
+    #star_task index
     File star_index="gs://ccle_default_params/STAR_genome_GRCh38_noALT_noHLA_noDecoy_ERCC_v29_oh100.tar.gz"
 
     #rsem index
@@ -107,34 +105,16 @@ workflow RNA_pipeline {
     #File pon_idx="gs://gatk-best-practices/somatic-hg38/1000g_pon.hg38.vcf.gz.tbi"
   }
 
-
-  call star_v1.star as star {
+  call RNA_preprocessing.RNA_preprocessing_pipeline as RNA_preprocessing_pipeline {
     input:
-      prefix=sample_id,
       fastq1=fastq1,
       fastq2=fastq2,
-      star_index=star_index
+      sample_id=sample_id,
   }
 
-  call rnaseqc2_v1.rnaseqc2 as rnaseqc2 {
+  call rnaseq_mutations.call_variants as call_variants {
     input:
-      bam_file=star.bam_file,
-      genes_gtf=genes_gtf,
-      sample_id=sample_id
-  }
-
-  call rsem_v1.rsem as rsem {
-    input:
-      transcriptome_bam=star.transcriptome_bam,
-      prefix=sample_id,
-      rsem_reference=rsem_reference,
-      is_stranded="false",
-      paired_end="true"
-  }
-
-  call rnaseq_mutations.call_variants as rnaseq_mutations {
-    input:
-      inputBam=star.bam_file,
+      inputBam=RNA_preprocessing_pipeline.bam_file,
       sampleName=sample_id,
       refFasta=refFasta,
       refFastaIndex=refFastaIndex,
@@ -171,30 +151,30 @@ workflow RNA_pipeline {
 
   output {
     #star
-    File bam_file=star.bam_file
-    File bam_index=star.bam_index
-    File transcriptome_bam=star.transcriptome_bam
-    File chimeric_junctions=star.chimeric_junctions
-    File chimeric_bam_file=star.chimeric_bam_file
-    File read_counts=star.read_counts
-    File junctions=star.junctions
-    File junctions_pass1=star.junctions_pass1
-    Array[File] logs=star.logs
+    File bam_file=RNA_preprocessing_pipeline.bam_file
+    File bam_index=RNA_preprocessing_pipeline.bam_index
+    File transcriptome_bam=RNA_preprocessing_pipeline.transcriptome_bam
+    File chimeric_junctions=RNA_preprocessing_pipeline.chimeric_junctions
+    File chimeric_bam_file=RNA_preprocessing_pipeline.chimeric_bam_file
+    File read_counts=RNA_preprocessing_pipeline.read_counts
+    File junctions=RNA_preprocessing_pipeline.junctions
+    File junctions_pass1=RNA_preprocessing_pipeline.junctions_pass1
+    Array[File] logs=RNA_preprocessing_pipeline.logs
     #rnaseqc
-    File gene_tpm=rnaseqc2.gene_tpm
-    File gene_counts=rnaseqc2.gene_counts
-    File exon_counts=rnaseqc2.exon_counts
-    File metrics=rnaseqc2.metrics
-    File insertsize_distr=rnaseqc2.insertsize_distr
+    File gene_tpm=RNA_preprocessing_pipeline.gene_tpm
+    File gene_counts=RNA_preprocessing_pipeline.gene_counts
+    File exon_counts=RNA_preprocessing_pipeline.exon_counts
+    File metrics=RNA_preprocessing_pipeline.metrics
+    File insertsize_distr=RNA_preprocessing_pipeline.insertsize_distr
     #rsem
-    File genes=rsem.genes
-    File isoforms=rsem.isoforms
+    File genes=RNA_preprocessing_pipeline.genes
+    File isoforms=RNA_preprocessing_pipeline.isoforms
     #StarFusion
     #File fusion_predictions=StarFusion.fusion_predictions
     #File fusion_predictions_abridged=StarFusion.fusion_predictions_abridged
     # mutations
-    File variant_filtered_vcf=rnaseq_mutations.variant_filtered_vcf
-    File variant_filtered_vcf_index=rnaseq_mutations.variant_filtered_vcf_index
+    File variant_filtered_vcf=call_variants.variant_filtered_vcf
+    File variant_filtered_vcf_index=call_variants.variant_filtered_vcf_index
 
   }
 }

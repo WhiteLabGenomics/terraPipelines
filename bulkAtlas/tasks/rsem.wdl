@@ -1,5 +1,9 @@
 version 1.0
 
+workflow run_rsem {
+    call rsem
+}
+
 task rsem {
 
     input {

@@ -63,7 +63,7 @@ task fastqc {
     # We reimplement the perl wrapper here. This has the advantage that it
     # gives us more control over the amount of memory used.
 
-    Int memory_mb =  ceil(1.5*size(seqFile, "GiB")) + 4 # Experimentally determined formula for memory allocation
+    Int memory = 4 # Experimentally determined formula for memory allocation
     Int disk_size_gb = 5*ceil(size(seqFile, "GiB")) + 8
 
     command {
@@ -101,7 +101,7 @@ task fastqc {
 
     runtime {
         cpu: threads
-        memory: "~{memory_mb} GiB"
+        memory: "~{memory} GiB"
         disks: "local-disk ~{disk_size_gb} HDD"
         time_minutes: timeMinutes
         docker: dockerImage

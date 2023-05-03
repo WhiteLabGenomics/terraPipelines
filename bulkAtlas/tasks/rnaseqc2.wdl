@@ -1,5 +1,9 @@
 version 1.0
 
+workflow run_rnaseqc2 {
+    call rnaseqc2
+}
+
 task rnaseqc2 {
 
     input {

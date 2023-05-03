@@ -1,10 +1,10 @@
 version 1.0
 
-import "fastqc.wdl" as fastqc_v1
-import "fastp.wdl" as fastp_v1
-import "star.wdl" as star_v1
-import "rnaseqc2.wdl" as rnaseqc2_v1
-import "rsem.wdl" as rsem_v1
+import "tasks/fastqc.wdl" as fastqc_task
+import "tasks/fastp.wdl" as fastp_task
+import "tasks/star.wdl" as star_task
+import "tasks/rnaseqc2.wdl" as rnaseqc2_task
+import "tasks/rsem.wdl" as rsem_task
 
 
 workflow RNA_preprocessing_pipeline {
@@ -18,7 +18,7 @@ workflow RNA_preprocessing_pipeline {
     #rannotation GTF
     File genes_gtf="gs://ccle_default_params/references_gtex_gencode.v29.GRCh38.ERCC.genes.collapsed_only.gtf"
 
-    #star_v1 index
+    #star_task index
     File star_index="gs://ccle_default_params/STAR_genome_GRCh38_noALT_noHLA_noDecoy_ERCC_v29_oh100.tar.gz"
 
     #rsem index
@@ -26,24 +26,24 @@ workflow RNA_preprocessing_pipeline {
 
   }
 
-  call fastp_v1.Fastp as fastp {
+  call fastp_task.Fastp as fastp {
       input:
         fastq1 = fastq1,
         fastq2 = fastq2,
         output_prefix = sample_id
     }
 
-  call fastqc_v1.fastqc as cleaned_fastqc1 {
+  call fastqc_task.fastqc as cleaned_fastqc1 {
     input:
       seqFile=fastp.fastq1_clipped,
   }
 
-  call fastqc_v1.fastqc as cleaned_fastqc2 {
+  call fastqc_task.fastqc as cleaned_fastqc2 {
     input:
       seqFile=fastp.fastq2_clipped,
   }
 
-  call star_v1.star as star {
+  call star_task.star as star {
     input:
       prefix=sample_id,
       fastq1=fastp.fastq1_clipped,
@@ -51,14 +51,14 @@ workflow RNA_preprocessing_pipeline {
       star_index=star_index
   }
 
-  call rnaseqc2_v1.rnaseqc2 as rnaseqc2 {
+  call rnaseqc2_task.rnaseqc2 as rnaseqc2 {
     input:
       bam_file=star.bam_file,
       genes_gtf=genes_gtf,
       sample_id=sample_id
   }
 
-  call rsem_v1.rsem as rsem {
+  call rsem_task.rsem as rsem {
     input:
       transcriptome_bam=star.transcriptome_bam,
       prefix=sample_id,

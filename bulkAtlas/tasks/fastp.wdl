@@ -1,6 +1,9 @@
 version 1.0
 # Adapter clipping
 # https://github.com/OpenGene/fastp
+workflow run_Fastp {
+  call Fastp
+}
 
 task Fastp {
   input {
@@ -17,15 +20,15 @@ task Fastp {
   }
 
   command {
-    bash ~{monitoring_script} > monitoring.log &
+    bash ${monitoring_script} > monitoring.log &
 
-    fastp --in1 ~{fastq1} --in2 ~{fastq2} --out1 ~{output_prefix}_read1.fastq.gz --out2 ~{output_prefix}_read2.fastq.gz \
-    --json ~{output_prefix}_fastp.json \
-    --html ~{output_prefix}_fastp.html \
+    fastp --in1 ${fastq1} --in2 ${fastq2} --out1 ${output_prefix}_read1.fastq.gz --out2 ${output_prefix}_read2.fastq.gz \
+    --json ${output_prefix}_fastp.json \
+    --html ${output_prefix}_fastp.html \
     --disable_quality_filtering \
     --disable_length_filtering \
-    --adapter_fasta ~{adapter_fasta} \
-    --thread ~{cpu}
+    --adapter_fasta ${adapter_fasta} \
+    --thread ${cpu}
   }
   
 

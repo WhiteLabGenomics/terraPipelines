@@ -42,7 +42,7 @@ task star {
         Int num_preempt = 1
     }
 
-    Int tot_memory =  memory + ceil(size(fastq1, "GiB")+size(fastq2, "GiB")) # Experimentally determined formula for memory allocation
+    Int tot_memory =  memory + 2 * ceil(size(fastq1, "GiB")+size(fastq2, "GiB")) # Experimentally determined formula for memory allocation
     Int tot_disk_space = disk_space + 5 * ceil(size(fastq1, "GiB")+size(fastq2, "GiB"))
 
     command {

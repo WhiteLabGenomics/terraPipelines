@@ -1,3 +1,9 @@
+version 1.0
+
+workflow run_CollectRNASeqMetrics {
+  call CollectRNASeqMetrics
+}
+
 task CollectRNASeqMetrics {
   input {
     File input_bam
@@ -19,14 +25,14 @@ task CollectRNASeqMetrics {
   Int java_memory_size = memory_mb - 1000
   Int max_heap = memory_mb - 500
 
-  command <<<
-    java -Xms~{java_memory_size}m -Xmx~{max_heap}m -jar /usr/picard/picard.jar CollectRnaSeqMetrics \
-      REF_FLAT=~{ref_flat} \
-      RIBOSOMAL_INTERVALS= ~{ribosomal_intervals} \
+  command {
+    java -Xms${java_memory_size}m -Xmx${max_heap}m -jar /usr/picard/picard.jar CollectRnaSeqMetrics \
+      REF_FLAT=${ref_flat} \
+      RIBOSOMAL_INTERVALS= ${ribosomal_intervals} \
       STRAND_SPECIFICITY=SECOND_READ_TRANSCRIPTION_STRAND \
-      INPUT=~{input_bam} \
-      OUTPUT=~{output_bam_prefix}.rna_metrics
-  >>>
+      INPUT=${input_bam} \
+      OUTPUT=${output_bam_prefix}.rna_metrics
+  }
 
   runtime {
     docker: docker
