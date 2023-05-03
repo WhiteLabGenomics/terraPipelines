@@ -63,8 +63,8 @@ task fastqc {
     # We reimplement the perl wrapper here. This has the advantage that it
     # gives us more control over the amount of memory used.
 
-    Int memory_mb =  ceil(1.5*size(fastq1, "MiB")) + 8192 # Experimentally determined formula for memory allocation
-    Int disk_size_gb = 5*ceil(size(fastq1, "GiB")) + 128
+    Int memory_mb =  ceil(1.5*size(seqFile, "GiB")) + 4 # Experimentally determined formula for memory allocation
+    Int disk_size_gb = 5*ceil(size(seqFile, "GiB")) + 8
 
     command {
         set -e
@@ -101,7 +101,7 @@ task fastqc {
 
     runtime {
         cpu: threads
-        memory: "~{memory_mb} MiB"
+        memory: "~{memory_mb} GiB"
         disks: "local-disk ~{disk_size_gb} HDD"
         time_minutes: timeMinutes
         docker: dockerImage
@@ -123,7 +123,6 @@ task fastqc {
         dir: {description: "Equivalent to fastqc's --dir option.", category: "advanced"}
         javaXmx: {description: "The maximum memory available to the program. Should be lower than `memory` to accommodate JVM overhead.", category: "advanced"}
         threads: {description: "The number of cores to use.", category: "advanced"}
-        memory: {description: "The amount of memory this job will use.", category: "advanced"}
         timeMinutes: {description: "The maximum amount of time the job will run in minutes.", category: "advanced"}
         dockerImage: {description: "The docker image used for this task. Changing this may result in errors which the developers may choose not to address.", category: "advanced"}
 
