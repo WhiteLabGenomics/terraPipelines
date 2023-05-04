@@ -42,7 +42,7 @@ task VariantFiltration {
     runtime {
         docker: docker
         memory: "3 GB"
-        disks: "local-disk " + (round(size(input_vcf,"GB")*2))+30 + " HDD"
+        disks: "local-disk " + round(size(input_vcf,"GB")*2)+30 + " HDD"
         preemptible: preemptible_count
     }
 }
