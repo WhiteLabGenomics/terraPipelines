@@ -17,13 +17,13 @@ task ScatterIntervalList {
     command <<<
         set -e
         mkdir out
-        ${gatk_path} --java-options "-Xms1g" \
+        ~{gatk_path} --java-options "-Xms1g" \
             IntervalListTools \
-            --SCATTER_COUNT ${scatter_count} \
+            --SCATTER_COUNT ~{scatter_count} \
             --SUBDIVISION_MODE BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
             --UNIQUE true \
             --SORT true \
-            --INPUT ${interval_list} \
+            --INPUT ~{interval_list} \
             --OUTPUT out
     
         python3 <<CODE
