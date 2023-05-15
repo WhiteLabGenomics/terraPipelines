@@ -46,7 +46,6 @@ workflow call_variants {
 
         String gatk4_docker = "broadinstitute/gatk:4.4.0.0"
         String gatk_path = "/gatk/gatk"
-        String star_docker = "quay.io/humancellatlas/secondary-analysis-star:v0.2.2-2.5.3a-40ead6e"
 
         Array[File]? knownVcfs
         Array[File]? knownVcfsIndices
@@ -56,13 +55,10 @@ workflow call_variants {
 
         Int? minConfidenceForVariantCalling
 
-        ## Inputs for STAR
-        Int? readLength
-        File? zippedStarReferences
         File genes_gtf
 
         ## Optional user optimizations
-        Int haplotypeScatterCount=6
+        Int haplotypeScatterCount=12
 
         Int preemptible_tries=3
         # funcotator
@@ -80,6 +76,7 @@ workflow call_variants {
         Array[String]? funcotator_excluded_fields
         Boolean funco_filter_funcotations=true
         String? funcotator_extra_args
+        Boolean run_Funcotate=true
     }
 
     Int funco_tar_size = if defined(funco_data_sources_tar_gz) then ceil(size(funco_data_sources_tar_gz, "GB") * 3) else 100
@@ -205,40 +202,43 @@ workflow call_variants {
             gatk_path = gatk_path
     }
 
-    Int disk_pad = 15
-    Float file_size_multiplier=2.25
+    if(run_Funcotate){
 
-    call Funcotate_task.Funcotate as Funcotate {
-        input:
-            ref_fasta = refFasta,
-            ref_fai = refFastaIndex,
-            ref_dict = refDict,
-            input_vcf = VariantFiltration.output_vcf,
-            input_vcf_idx = VariantFiltration.output_vcf_index,
-            # could be none
-            reference_version = select_first([funco_reference_version, "hg38"]),
-            output_file_base_name = basename(VariantFiltration.output_vcf, ".vcf") + ".annotated",
-            output_format = funco_output_format,
-            compress = funco_compress,
-            use_gnomad = funco_use_gnomad_AF,
-            data_sources_tar_gz = funco_data_sources_tar_gz,
+        Int disk_pad = 15
+        Float file_size_multiplier=2.25
 
-            sequencing_center = sequencing_center,
-            sequence_source = sequence_source,
-            transcript_selection_mode = funco_transcript_selection_mode,
-            transcript_selection_list = funco_transcript_selection_list,
-            annotation_defaults = funco_annotation_defaults,
-            annotation_overrides = funco_annotation_overrides,
-            funcotator_excluded_fields = funcotator_excluded_fields,
-            interval_list=gtfToCallingIntervals.interval_list, # maybe not the right one
-            filter_funcotations = funco_filter_funcotations,
-            extra_args = funcotator_extra_args,
-            disk_space = ceil(size(VariantFiltration.output_vcf, "GB") * file_size_multiplier)  + funco_tar_size + disk_pad,
-            gatk_docker=gatk4_docker,
-            machine_mem=4000,
-            preemptible=2,
-            max_retries=2,
-            cpu=2
+        call Funcotate_task.Funcotate as Funcotate {
+            input:
+                ref_fasta = refFasta,
+                ref_fai = refFastaIndex,
+                ref_dict = refDict,
+                input_vcf = VariantFiltration.output_vcf,
+                input_vcf_idx = VariantFiltration.output_vcf_index,
+                # could be none
+                reference_version = select_first([funco_reference_version, "hg38"]),
+                output_file_base_name = basename(VariantFiltration.output_vcf, ".vcf") + ".annotated",
+                output_format = funco_output_format,
+                compress = funco_compress,
+                use_gnomad = funco_use_gnomad_AF,
+                data_sources_tar_gz = funco_data_sources_tar_gz,
+
+                sequencing_center = sequencing_center,
+                sequence_source = sequence_source,
+                transcript_selection_mode = funco_transcript_selection_mode,
+                transcript_selection_list = funco_transcript_selection_list,
+                annotation_defaults = funco_annotation_defaults,
+                annotation_overrides = funco_annotation_overrides,
+                funcotator_excluded_fields = funcotator_excluded_fields,
+                interval_list=gtfToCallingIntervals.interval_list, # maybe not the right one
+                filter_funcotations = funco_filter_funcotations,
+                extra_args = funcotator_extra_args,
+                disk_space = ceil(size(VariantFiltration.output_vcf, "GB") * file_size_multiplier)  + funco_tar_size + disk_pad,
+                gatk_docker=gatk4_docker,
+                machine_mem=4000,
+                preemptible=2,
+                max_retries=2,
+                cpu=2
+        }
     }
 
     output {
@@ -246,7 +246,7 @@ workflow call_variants {
         File merged_vcf_index = MergeVCFs.output_vcf_index
         File variant_filtered_vcf = VariantFiltration.output_vcf
         File variant_filtered_vcf_index = VariantFiltration.output_vcf_index
-        File funcotated_output_file = Funcotate.funcotated_output_file
-        File funcotated_output_file_index = Funcotate.funcotated_output_file_index
+        File? funcotated_output_file = Funcotate.funcotated_output_file
+        File? funcotated_output_file_index = Funcotate.funcotated_output_file_index
     }
 }
