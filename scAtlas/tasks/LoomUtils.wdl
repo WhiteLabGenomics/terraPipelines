@@ -22,7 +22,7 @@ task SmartSeq2LoomOutput {
   }
 
   meta {
-    description: "This task will convert some of the outputs of the SmartSeq2 pipeline into a loom file"
+    description: "This task will converts some of the outputs of Smart-seq2 pipeline into a loom file"
   }
 
   parameter_meta {
@@ -32,7 +32,7 @@ task SmartSeq2LoomOutput {
   command {
     set -euo pipefail
 
-    python3 ../scripts/create_loom_ss2.py \
+    python3 /usr/gitc/create_loom_ss2.py \
        --qc_files ~{sep=' ' smartseq_qc_files} \
        --rsem_genes_results  ~{rsem_gene_results} \
        --output_loom_path  "~{input_id}.loom" \
@@ -62,7 +62,7 @@ task OptimusLoomGeneration {
 
   input {
     #runtime values
-    String docker = "us.gcr.io/broad-gotc-prod/warp-tools:1.0.1-1679941323"
+    String docker = "us.gcr.io/broad-gotc-prod/warp-tools:1.0.1-1681406657"
     # name of the sample
     String input_id
     # user provided id
@@ -109,7 +109,7 @@ task OptimusLoomGeneration {
     touch empty_drops_result.csv
 
     if [ "~{counting_mode}" == "sc_rna" ]; then
-        python3 ../scripts/create_loom_optimus.py \
+        python3 /warptools/scripts/create_loom_optimus.py \
           ~{if defined(empty_drops_result) then "--empty_drops_file  " + empty_drops_result  else "--empty_drops_file empty_drops_result.csv "  } \
           --add_emptydrops_data ~{add_emptydrops_data} \
           --annotation_file ~{annotation_file} \
@@ -126,7 +126,7 @@ task OptimusLoomGeneration {
           --expression_data_type "exonic" \
           --pipeline_version ~{pipeline_version}
     else
-        python3 ../create_snrna_optimus.py \
+        python3 /warptools/scripts/create_snrna_optimus.py \
           --annotation_file ~{annotation_file} \
           --cell_metrics ~{cell_metrics} \
           --gene_metrics ~{gene_metrics} \
@@ -183,7 +183,7 @@ task AggregateSmartSeq2Loom {
       set -e
       
       # Merge the loom files
-      python3 ../scripts/ss2_loom_merge.py \
+      python3 /usr/gitc/ss2_loom_merge.py \
       --input-loom-files ~{sep=' ' loom_input} \
       --output-loom-file "~{batch_id}.loom" \
       --batch_id ~{batch_id} \
@@ -218,7 +218,7 @@ task SingleNucleusOptimusLoomOutput {
 
     input {
         #runtime values
-        String docker = "us.gcr.io/broad-gotc-prod/warp-tools:1.0.1-1679941323"
+        String docker = "us.gcr.io/broad-gotc-prod/warp-tools:1.0.1-1681406657"
         # name of the sample
         String input_id
         # user provided id
@@ -263,7 +263,7 @@ task SingleNucleusOptimusLoomOutput {
     command {
         set -euo pipefail
 
-        python3 ../scripts/create_snrna_optimus_counts.py \
+        python3 /warptools/scripts/create_snrna_optimus_counts.py \
         --annotation_file ~{annotation_file} \
         --cell_metrics ~{cell_metrics} \
         --gene_metrics ~{gene_metrics} \
@@ -347,7 +347,7 @@ task SingleNucleusSmartSeq2LoomOutput {
         do
         # creates a table with gene_id, gene_name, intron and exon counts
         echo "Running create_snss2_counts_csv."
-        python ../scripts/create_snss2_counts_csv.py \
+        python /usr/gitc/create_snss2_counts_csv.py \
         --in-gtf ~{annotation_introns_added_gtf} \
         --intron-counts ${introns_counts_files[$i]} \
         --exon-counts ${exons_counts_files[$i]}  \
@@ -362,7 +362,7 @@ task SingleNucleusSmartSeq2LoomOutput {
 
         # create the loom file
         echo "Running create_loom_snss2."
-        python3 ../scripts/create_loom_snss2.py \
+        python3 /usr/gitc/create_loom_snss2.py \
         --qc_files "${output_prefix[$i]}.Picard_group.csv" \
         --count_results  "${output_prefix[$i]}.exon_intron_counts.tsv" \
         --output_loom_path "${output_prefix[$i]}.loom" \
@@ -401,14 +401,14 @@ task SlideSeqLoomOutput {
     String input_id
     String pipeline_version
 
-    String docker = "us.gcr.io/broad-gotc-prod/warp-tools:1.0.1-1679941323"
+    String docker = "us.gcr.io/broad-gotc-prod/warp-tools:1.0.1-1681406657"
     Int disk_size_gb = 200
     Int memory_mb = 18000
     Int cpu = 4
   }
 
   command <<<
-    python3 ../scripts/create_loom_slide_seq.py \
+    python3 /warptools/scripts/create_loom_slide_seq.py \
        --bead_locations ~{bead_locations} \
        --annotation_file ~{annotation_file} \
        --cell_metrics ~{cell_metrics} \
