@@ -1,0 +1,48 @@
+#!/bin/bash
+
+cd /cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution
+tmpDir=$(mkdir -p "/cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/tmp.864bb7b1" && echo "/cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/tmp.864bb7b1")
+chmod 777 "$tmpDir"
+export _JAVA_OPTIONS=-Djava.io.tmpdir="$tmpDir"
+export TMPDIR="$tmpDir"
+export HOME="$HOME"
+(
+cd /cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution
+
+)
+out85016339="${tmpDir}/out.$$" err85016339="${tmpDir}/err.$$"
+mkfifo "$out85016339" "$err85016339"
+trap 'rm "$out85016339" "$err85016339"' EXIT
+touch '/cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution/stdout' '/cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution/stderr'
+tee '/cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution/stdout' < "$out85016339" &
+tee '/cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution/stderr' < "$err85016339" >&2 &
+(
+cd /cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution
+
+
+# check genomic reference version and print to output txt file
+STRING=gs://gcp-public-data--broad-references/hg38/v0/star/star_2.7.9a_primary_gencode_human_v27.tar
+BASE=$(basename $STRING .tar)
+IFS=' -' read -r -a array <<< $BASE
+REFERENCE=${array[2]}
+VERSION=${array[4]}
+ANNOTATION=${array[5]}
+
+echo -e "$REFERENCE\n$VERSION\n$ANNOTATION" > reference_version.txt
+echo Reference is $REFERENCE
+echo Version is $VERSION
+echo Annotation is $ANNOTATION
+)  > "$out85016339" 2> "$err85016339"
+echo $? > /cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution/rc.tmp
+(
+# add a .file in every empty directory to facilitate directory delocalization on the cloud
+cd /cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution
+find . -type d -exec sh -c '[ -z "$(ls -A '"'"'{}'"'"')" ] && touch '"'"'{}'"'"'/.file' \;
+)
+(
+cd /cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution
+sync
+
+
+)
+mv /cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution/rc.tmp /cromwell-executions/Optimus/85016339-17d3-491d-8526-c599740d1d34/call-ReferenceCheck/execution/rc

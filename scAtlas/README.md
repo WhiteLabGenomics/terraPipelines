@@ -10,6 +10,14 @@ containing raw counts and TPMs.
 
 Source: https://broadinstitute.github.io/warp/
 
-# test Optimus pipeline
-cromwell run Optimus.wdl --inputs test_inputs/inputs_8k_pbmc.json
+# Test optimus pipeline:
+# validate wdl file
+womtool validate Optimus.wdl
 
+womtool inputs Optimus.wdl > test_inputs/optimus_inputs.json
+
+# download 10X test data
+# https://support.10xgenomics.com/single-cell-gene-expression/datasets/3.0.0/pbmc_10k_v3
+
+# test locally using cromwell
+cromwell run Optimus.wdl --inputs test_inputs/10k_pbmc_v3.json

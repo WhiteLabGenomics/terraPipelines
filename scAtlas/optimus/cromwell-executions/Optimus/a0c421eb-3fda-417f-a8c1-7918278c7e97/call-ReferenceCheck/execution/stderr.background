@@ -1,0 +1,16 @@
+Unable to find image 'gcr.io/gcp-runtimes/ubuntu_16_0_4@sha256:025124e2f1cf4d29149958f17270596bffe13fc6acca6252977c572dd5ba01bf' locally
+gcr.io/gcp-runtimes/ubuntu_16_0_4@sha256:025124e2f1cf4d29149958f17270596bffe13fc6acca6252977c572dd5ba01bf: Pulling from gcp-runtimes/ubuntu_16_0_4
+6c5b97b864a6: Pulling fs layer
+3bc468948ab5: Pulling fs layer
+3c2cba919283: Pulling fs layer
+3c2cba919283: Verifying Checksum
+3c2cba919283: Download complete
+3bc468948ab5: Verifying Checksum
+3bc468948ab5: Download complete
+6c5b97b864a6: Download complete
+6c5b97b864a6: Pull complete
+3bc468948ab5: Pull complete
+3c2cba919283: Pull complete
+Digest: sha256:025124e2f1cf4d29149958f17270596bffe13fc6acca6252977c572dd5ba01bf
+Status: Downloaded newer image for gcr.io/gcp-runtimes/ubuntu_16_0_4@sha256:025124e2f1cf4d29149958f17270596bffe13fc6acca6252977c572dd5ba01bf
+WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
