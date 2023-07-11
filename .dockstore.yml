@@ -1,27 +1,47 @@
 version: 1.2
 workflows:
-  - subclass: WDL
+  - name: bulkRNA_workflow
+    subclass: WDL
     publish: True
     primaryDescriptorPath: /bulkAtlas/RNA_pipeline.wdl
     testParameterFiles: 
-      - /test.json
+      - /bulkAtlas/conf/inputs_hg38_STAR_fusion.json
     authors:
       - name: jkalfon
         email: jkalfon@whitelabgx.com
-  - subclass: WDL
-    publish: True
-    primaryDescriptorPath: /bulkAtlas/RNA_preprocessing_pipeline.wdl
-    testParameterFiles:
-      - /test.json
-    authors:
-      - name: jkalfon
-        email: jkalfon@whitelabgx.com
-
-  - subclass: WDL
+  - name: bulkRNA_germline_variant_workflow
+    subclass: WDL
     publish: True
     primaryDescriptorPath: /bulkAtlas/rnaseq-germline-snps-indels.wdl
     testParameterFiles:
-      - /test.json
+      - /bulkAtlas/conf/inputs_rnaseq-germline-snps-indels.json
     authors:
       - name: jkalfon
         email: jkalfon@whitelabgx.com
+  - name: optimus_workflow
+    subclass: WDL
+    publish: True
+    primaryDescriptorPath: /scAtlas/optimus/Optimus.wdl
+    testParameterFiles:
+      - /scAtlas/optimus/test_inputs/10k_pbmc_v3.json
+    authors:
+      - name: dzielinski
+        email: dzielinski@whitelabgx.com       
+  - name: smartseq_single_sample_workflow
+    subclass: WDL
+    publish: True
+    primaryDescriptorPath: /scAtlas/smartseq2_single_sample/SmartSeq2SingleSample.wdl
+    testParameterFiles:
+      - /scAtlas/smartseq2_single_sample/example_inputs/human_single_example.json 
+    authors:
+      - name: dzielinski
+        email: dzielinski@whitelabgx.com
+  - name: smartseq_multi_sample_workflow
+    subclass: WDL
+    publish: True
+    primaryDescriptorPath: /scAtlas/smartseq2_multisample/MultiSampleSmartSeq2.wdl
+    testParameterFiles:
+      - /scAtlas/smartseq2_multisample/example_inputs/human_single_example.json
+    authors:
+      - name: dzielinski
+        email: dzielinski@whitelabgx.com       
