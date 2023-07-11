@@ -11,7 +11,7 @@ import "../tasks/MergeSortBam.wdl" as Merge
 workflow Optimus {
 
   meta {
-    description: "The optimus 3' pipeline processes 10x genomics sequencing data based on the v2 chemistry. It corrects cell barcodes and UMIs, aligns reads, marks duplicates, and returns data as alignments in BAM format and as counts in sparse matrix exchange format."
+    description: "The optimus 3' pipeline processes 10x genomics sequencing data based on v2 or v3 chemistry. It corrects cell barcodes and UMIs, aligns reads, marks duplicates, and returns data as alignments in BAM format and as counts in sparse matrix exchange format."
   }
 
   input {
