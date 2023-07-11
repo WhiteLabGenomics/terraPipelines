@@ -23,7 +23,7 @@ workflows:
     publish: True
     primaryDescriptorPath: /scAtlas/optimus/Optimus.wdl
     testParameterFiles:
-      - /scAtlas/optimus/test_inputs/10k_pbmc_v3.json
+      - /scAtlas/optimus/test_data/10k_pbmc_v3_inputs.json
     authors:
       - name: dzielinski
         email: dzielinski@whitelabgx.com       
@@ -32,7 +32,7 @@ workflows:
     publish: True
     primaryDescriptorPath: /scAtlas/smartseq2_single_sample/SmartSeq2SingleSample.wdl
     testParameterFiles:
-      - /scAtlas/smartseq2_single_sample/example_inputs/human_single_example.json 
+      - /scAtlas/smartseq2_single_sample/test_data/human_single_example_inputs.json 
     authors:
       - name: dzielinski
         email: dzielinski@whitelabgx.com
@@ -41,7 +41,7 @@ workflows:
     publish: True
     primaryDescriptorPath: /scAtlas/smartseq2_multisample/MultiSampleSmartSeq2.wdl
     testParameterFiles:
-      - /scAtlas/smartseq2_multisample/example_inputs/human_single_example.json
+      - /scAtlas/smartseq2_multisample/test_data/human_single_example_inputs.json
     authors:
       - name: dzielinski
-        email: dzielinski@whitelabgx.com       
+        email: dzielinski@whitelabgx.com
