@@ -1,5 +1,5 @@
 {
-  "Optimus.GeneMetrics.cpu": "1",
+  "Optimus.GeneMetrics.cpu": "4",
   "Optimus.tenx_chemistry_version": "3",
   "Optimus.input_id": "10k_pbmc",
   "Optimus.r1_fastq": [
