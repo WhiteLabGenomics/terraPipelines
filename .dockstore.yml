@@ -23,7 +23,7 @@ workflows:
     publish: True
     primaryDescriptorPath: /scAtlas/optimus/Optimus.wdl
     testParameterFiles:
-      - /scAtlas/optimus/test_data/10k_pbmc_v3_inputs.json
+      - /scAtlas/optimus/test_data/8k_pbmc_v2_inputs.json
     authors:
       - name: dzielinski
         email: dzielinski@whitelabgx.com       
