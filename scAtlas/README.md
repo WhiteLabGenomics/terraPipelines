@@ -26,7 +26,7 @@ cat ref-files.txt | gsutil -m cp -I gs://whitelabgx-references/hg38/
 cat resource-files.txt | gsutil -m cp -I gs://whitelabgx-references/resources/
 
 # https://www.gencodegenes.org/human/release_27.html
-gsutil cp gencode.v27.annotation.gtf.gz gs://whitelabgx-references/hg38/
+gsutil cp gencode.v27.annotation.gtf gs://whitelabgx-references/hg38/
 
 # test locally using cromwell
 cromwell run Optimus.wdl --inputs test_data/8k_pbmc_v2_inputs.json 
