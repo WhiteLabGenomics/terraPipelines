@@ -8,7 +8,7 @@ The smartseq2 multi-sample pipeline is a wrapper around the standard single-samp
 
 source: https://broadinstitute.github.io/warp/
 
-# Test optimus pipeline:
+## Test optimus pipeline:
 # validate wdl file
 womtool validate Optimus.wdl
 
@@ -30,3 +30,10 @@ gsutil cp gencode.v27.annotation.gtf gs://whitelabgx-references/hg38/
 
 # test locally using cromwell
 cromwell run Optimus.wdl --inputs test_data/8k_pbmc_v2_inputs.json 
+
+## Test smartseq2 pipelines:
+# validate wdl files and generate input files
+womtool validate SmartSeq2SingleSample.wdl
+womtool inputs SmartSeq2SingleSample.wdl > test_data/SmartSeq2SingleSample_inputs.json
+womtool validate MultiSampleSmartSeq2.wdl
+womtool inputs MultiSampleSmartSeq2.wdl > test_data/MultiSampleSmartSeq2_inputs.json
