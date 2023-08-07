@@ -29,7 +29,7 @@ cat resource-files.txt | gsutil -m cp -I gs://whitelabgx-references/resources/
 gsutil cp gencode.v27.annotation.gtf gs://whitelabgx-references/hg38/
 
 # test locally using cromwell
-cromwell run Optimus.wdl --inputs test_data/8k_pbmc_v2_inputs.json 
+cromwell run Optimus.wdl --inputs test_data/10k_pbmc_v3_inputs.json 
 
 ## Test smartseq2 pipelines:
 # validate wdl files and generate input files
