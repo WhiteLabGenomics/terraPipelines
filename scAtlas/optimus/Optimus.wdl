@@ -7,6 +7,8 @@ import "../tasks/RunEmptyDrops.wdl" as RunEmptyDrops
 import "../tasks/CheckInputs.wdl" as OptimusInputChecks
 import "../tasks/MergeSortBam.wdl" as Merge
 import "../tasks/H5adUtils.wdl" as H5adUtils
+import "../tasks/cellbender_remove_background.wdl" as cellbender
+
 
 workflow Optimus {
   meta {
@@ -224,6 +226,11 @@ workflow Optimus {
 
   File final_h5ad_output = select_first([OptimusH5adGenerationWithExons.h5ad_output, OptimusH5adGeneration.h5ad_output])
 
+  call cellbender.run_cellbender_remove_background_gpu as cellbender_remove_background {
+    input:
+      sample_name = input_id,
+      input_file_unfiltered = final_h5ad_output
+  }
 
   output {
     # version of this pipeline
@@ -239,5 +246,14 @@ workflow Optimus {
     File? aligner_metrics = MergeStarOutputs.cell_reads_out
     # h5ad
     File h5ad_output_file = final_h5ad_output
+    # cellbender
+    File log = cellbender_remove_background.log
+    File summary_pdf = cellbender_remove_background.summary_pdf
+    File cell_barcodes_csv = cellbender_remove_background.cell_barcodes_csv
+    Array[File] metrics_csv_array = cellbender_remove_background.metrics_csv_array
+    Array[File] html_report_array = cellbender_remove_background.html_report_array
+    Array[File] h5_array = cellbender_remove_background.h5_array
+    String output_directory = cellbender_remove_background.output_directory
+    File checkpoint_file = cellbender_remove_background.checkpoint_file
   }
 }
