@@ -248,12 +248,12 @@ workflow Optimus {
     File h5ad_output_file = final_h5ad_output
     # cellbender
     File log = cellbender_remove_background.log
-    File summary_pdf = cellbender_remove_background.summary_pdf
-    File cell_barcodes_csv = cellbender_remove_background.cell_barcodes_csv
-    Array[File] metrics_csv_array = cellbender_remove_background.metrics_csv_array
-    Array[File] html_report_array = cellbender_remove_background.html_report_array
+    File summary_pdf = cellbender_remove_background.pdf
+    File cell_barcodes_csv = cellbender_remove_background.cell_csv
+    Array[File] metrics_csv_array = cellbender_remove_background.metrics_array
+    Array[File] html_report_array = cellbender_remove_background.report_array
     Array[File] h5_array = cellbender_remove_background.h5_array
-    String output_directory = cellbender_remove_background.output_directory
-    File checkpoint_file = cellbender_remove_background.checkpoint_file
+    String output_directory = cellbender_remove_background.output_dir
+    File checkpoint_file = cellbender_remove_background.ckpt_file
   }
 }
