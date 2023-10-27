@@ -246,14 +246,15 @@ workflow Optimus {
     File? aligner_metrics = MergeStarOutputs.cell_reads_out
     # h5ad
     File h5ad_output_file = final_h5ad_output
+    
     # cellbender
-    File log = cellbender_remove_background.log
-    File summary_pdf = cellbender_remove_background.pdf
-    File cell_barcodes_csv = cellbender_remove_background.cell_csv
-    Array[File] metrics_csv_array = cellbender_remove_background.metrics_array
-    Array[File] html_report_array = cellbender_remove_background.report_array
-    Array[File] h5_array = cellbender_remove_background.h5_array
-    String output_directory = cellbender_remove_background.output_dir
-    File checkpoint_file = cellbender_remove_background.ckpt_file
+    File cellbender_log = cellbender_remove_background.log
+    File cellbender_summary_pdf = cellbender_remove_background.pdf
+    File cellbender_cell_barcodes_csv = cellbender_remove_background.cell_csv
+    Array[File] cellbender_metrics_csv_array = cellbender_remove_background.metrics_array
+    Array[File] cellbender_html_report_array = cellbender_remove_background.report_array
+    Array[File] cellbender_h5_array = cellbender_remove_background.h5_array
+    String cellbender_output_directory = cellbender_remove_background.output_dir
+    File cellbender_checkpoint_file = cellbender_remove_background.ckpt_file
   }
 }
