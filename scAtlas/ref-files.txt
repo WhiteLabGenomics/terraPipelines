@@ -1,0 +1,6 @@
+gs://gcp-public-data--broad-references/hg38/v0/GRCh38.primary_assembly.genome.fa
+gs://gcp-public-data--broad-references/hg38/v0/GRCh38_gencode.v27.refFlat.txt
+gs://gcp-public-data--broad-references/hg38/v0/gencode.v27.primary_assembly.annotation.interval_list
+gs://gcp-public-data--broad-references/hg38/v0/star/star_2.7.9a_primary_gencode_human_v27.tar
+gs://gcp-public-data--broad-references/hg38/v0/rsem_primary_gencode_human_v27.tar
+gs://gcp-public-data--broad-references/hg38/v0/hisat2_primary_gencode_human_v27.tar.gz

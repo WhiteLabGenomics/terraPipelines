@@ -1,0 +1,12 @@
+{
+    "Optimus.bam": "${10k_pbmc_v3.bam}",
+    "Optimus.cell_calls": "${10k_pbmc_v3.cell_calls}",
+    "Optimus.cell_metrics": "${10k_pbmc_v3.cell_metrics}",
+    "Optimus.gene_metrics": "${10k_pbmc_v3.gene_metrics}",
+    "Optimus.genomic_reference_version": "${10k_pbmc_v3.genomic_reference_version}",
+    "Optimus.loom_output_file": "${10k_pbmc_v3.loom_output_file}",
+    "Optimus.matrix": "${10k_pbmc_v3.matrix}",
+    "Optimus.matrix_col_index": "${10k_pbmc_v3.matrix_col_index}",
+    "Optimus.matrix_row_index": "${10k_pbmc_v3.matrix_row_index}",
+    "Optimus.pipeline_version_out": "${10k_pbmc_v3.pipeline_version_out}"
+}

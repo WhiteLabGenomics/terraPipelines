@@ -1,0 +1,21 @@
+{
+  "Optimus.GeneMetrics.cpu": "4",
+  "Optimus.tenx_chemistry_version": "3",
+  "Optimus.input_id": "10k_pbmc_v3",
+  "Optimus.r1_fastq": [
+    "gs://whitelabgx-references/resources/pbmc_10k_10X_v3/pbmc_10k_v3_S1_L001_R1_001.fastq.gz",
+    "gs://whitelabgx-references/resources/pbmc_10k_v3/pbmc_10k_v3_S1_L002_R1_001.fastq.gz"
+  ],
+  "Optimus.r2_fastq": [
+    "gs://whitelabgx-references/resources/pbmc_10k_10X_v3/pbmc_10k_v3_S1_L001_R2_001.fastq.gz",
+    "gs://whitelabgx-references/resources/pbmc_10k_10X_v3/pbmc_10k_v3_S1_L002_R2_001.fastq.gz"
+  ],
+  "Optimus.i1_fastq": [
+    "gs://whitelabgx-references/resources/pbmc_10k_10X_v3/pbmc_10k_v3_S1_L001_I1_001.fastq.gz",
+    "gs://whitelabgx-references/resources/pbmc_10k_10X_v3/pbmc_10k_v3_S1_L002_I1_001.fastq.gz"
+  ],
+  "Optimus.tar_star_reference": "gs://whitelabgx-references/hg38/star_2.7.9a_primary_gencode_human_v27.tar",
+  "Optimus.count_exons": "false",
+  "Optimus.ref_genome_fasta": "gs://whitelabgx-references/hg38/GRCh38.primary_assembly.genome.fa",
+  "Optimus.annotations_gtf": "gs://whitelabgx-references/hg38/gencode.v27.annotation.gtf"
+}
