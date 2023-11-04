@@ -4,14 +4,15 @@ import "../tasks/FastqProcessing.wdl" as FastqProcessing
 import "../tasks/StarAlign.wdl" as StarAlign
 import "../tasks/Metrics.wdl" as Metrics
 import "../tasks/RunEmptyDrops.wdl" as RunEmptyDrops
-import "../tasks/LoomUtils.wdl" as LoomUtils
 import "../tasks/CheckInputs.wdl" as OptimusInputChecks
 import "../tasks/MergeSortBam.wdl" as Merge
+import "../tasks/H5adUtils.wdl" as H5adUtils
+import "../tasks/cellbender_remove_background.wdl" as cellbender
+
 
 workflow Optimus {
-
   meta {
-    description: "The optimus 3' pipeline processes 10x genomics sequencing data based on v2 or v3 chemistry. It corrects cell barcodes and UMIs, aligns reads, marks duplicates, and returns data as alignments in BAM format and as counts in sparse matrix exchange format."
+    description: "The optimus 3' pipeline processes 10x genomics sequencing data based on the v2 chemistry. It corrects cell barcodes and UMIs, aligns reads, marks duplicates, and returns data as alignments in BAM format and as counts in sparse matrix exchange format."
   }
 
   input {
@@ -38,6 +39,9 @@ workflow Optimus {
     # Whitelist is selected based on the input tenx_chemistry_version
     File whitelist = checkOptimusInput.whitelist_out
 
+    # read_structure is based on v2 or v3 chemistry
+    String read_struct = checkOptimusInput.read_struct_out
+
     # Emptydrops lower cutoff
     Int emptydrops_lower = 100
 
@@ -48,8 +52,8 @@ workflow Optimus {
     # Set to true if you expect that r1_read_length does not match length of UMIs/barcodes for 10x chemistry v2 (26 bp) or v3 (28 bp).
     Boolean ignore_r1_read_length = false
 
-    # Set to true to count reads in stranded mode
-    String use_strand_info = "false"
+    # Set to Forward, Reverse, or Unstranded to account for stranded library preparations (per STARsolo documentation)
+    String star_strand_mode = "Forward"
     
 # Set to true to count reads aligned to exonic regions in sn_rna mode
     Boolean count_exons = false
@@ -61,15 +65,15 @@ workflow Optimus {
   }
 
   # version of this pipeline
-  String pipeline_version = "5.7.4"
 
+  String pipeline_version = "6.0.0"
 
   # this is used to scatter matched [r1_fastq, r2_fastq, i1_fastq] arrays
   Array[Int] indices = range(length(r1_fastq))
 
   # 10x parameters
-  File whitelist_v2 = "gs://whitelabgx-references/resources/X10_resources/737k-august-2016.txt"
-  File whitelist_v3 = "gs://whitelabgx-references/resources/X10_resources/3M-febrary-2018.txt"
+  File whitelist_v2 = "gs://gcp-public-data--broad-references/RNA/resources/737k-august-2016.txt"
+  File whitelist_v3 = "gs://gcp-public-data--broad-references/RNA/resources/3M-febrary-2018.txt"
   # Takes the first read1 FASTQ from the inputs to check for chemistry match
   File r1_single_fastq = r1_fastq[0]
 
@@ -87,7 +91,7 @@ workflow Optimus {
     whitelist: "10x genomics cell barcode whitelist"
     tenx_chemistry_version: "10X Genomics v2 (10 bp UMI) or v3 chemistry (12bp UMI)"
     force_no_check: "Set to true to override input checks and allow pipeline to proceed with invalid input"
-    use_strand_info: "Set to true to count reads in stranded mode"
+    star_strand_mode: "STAR mode for handling stranded reads. Options are 'Forward', 'Reverse, or 'Unstranded.' Default is Forward."
   }
 
   call OptimusInputChecks.checkOptimusInput {
@@ -114,7 +118,8 @@ workflow Optimus {
       r2_fastq = r2_fastq,
       whitelist = whitelist,
       chemistry = tenx_chemistry_version,
-      sample_id = input_id
+      sample_id = input_id,
+      read_struct = read_struct
   }
 
   scatter(idx in range(length(SplitFastq.fastq_R1_output_array))) {
@@ -122,6 +127,7 @@ workflow Optimus {
       input:
         r1_fastq = [SplitFastq.fastq_R1_output_array[idx]],
         r2_fastq = [SplitFastq.fastq_R2_output_array[idx]],
+        star_strand_mode = star_strand_mode,
         white_list = whitelist,
         tar_star_reference = tar_star_reference,
         chemistry = tenx_chemistry_version,
@@ -156,6 +162,10 @@ workflow Optimus {
       barcodes = STARsoloFastq.barcodes,
       features = STARsoloFastq.features,
       matrix = STARsoloFastq.matrix,
+      cell_reads = STARsoloFastq.cell_reads,
+      summary = STARsoloFastq.summary,
+      align_features = STARsoloFastq.align_features,
+      umipercell = STARsoloFastq.umipercell,
       input_id = input_id
   }
   if (counting_mode == "sc_rna"){
@@ -169,7 +179,7 @@ workflow Optimus {
   }
 
   if (!count_exons) {
-    call LoomUtils.OptimusLoomGeneration{
+    call H5adUtils.OptimusH5adGeneration{
       input:
         input_id = input_id,
         input_name = input_name,
@@ -192,9 +202,10 @@ workflow Optimus {
         barcodes = STARsoloFastq.barcodes_sn_rna,
         features = STARsoloFastq.features_sn_rna,
         matrix = STARsoloFastq.matrix_sn_rna,
+        cell_reads = STARsoloFastq.cell_reads_sn_rna,
         input_id = input_id
     }
-    call LoomUtils.SingleNucleusOptimusLoomOutput as OptimusLoomGenerationWithExons{
+    call H5adUtils.SingleNucleusOptimusH5adOutput as OptimusH5adGenerationWithExons{
       input:
         input_id = input_id,
         input_name = input_name,
@@ -211,10 +222,15 @@ workflow Optimus {
         gene_id_exon = MergeStarOutputsExons.col_index,
         pipeline_version = "Optimus_v~{pipeline_version}"
     }
-
   }
 
-  File final_loom_output = select_first([OptimusLoomGenerationWithExons.loom_output, OptimusLoomGeneration.loom_output])
+  File final_h5ad_output = select_first([OptimusH5adGenerationWithExons.h5ad_output, OptimusH5adGeneration.h5ad_output])
+
+  call cellbender.run_cellbender_remove_background_gpu as cellbender_remove_background {
+    input:
+      sample_name = input_id,
+      input_file_unfiltered = final_h5ad_output
+  }
 
   output {
     # version of this pipeline
@@ -227,7 +243,18 @@ workflow Optimus {
     File cell_metrics = CellMetrics.cell_metrics
     File gene_metrics = GeneMetrics.gene_metrics
     File? cell_calls = RunEmptyDrops.empty_drops_result
-    # loom
-    File loom_output_file = final_loom_output
-}
+    File? aligner_metrics = MergeStarOutputs.cell_reads_out
+    # h5ad
+    File h5ad_output_file = final_h5ad_output
+    
+    # cellbender
+    File cellbender_log = cellbender_remove_background.log
+    File cellbender_summary_pdf = cellbender_remove_background.pdf
+    File cellbender_cell_barcodes_csv = cellbender_remove_background.cell_csv
+    Array[File] cellbender_metrics_csv_array = cellbender_remove_background.metrics_array
+    Array[File] cellbender_html_report_array = cellbender_remove_background.report_array
+    Array[File] cellbender_h5_array = cellbender_remove_background.h5_array
+    String cellbender_output_directory = cellbender_remove_background.output_dir
+    File cellbender_checkpoint_file = cellbender_remove_background.ckpt_file
+  }
 }
