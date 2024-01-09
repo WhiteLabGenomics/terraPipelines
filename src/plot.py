@@ -1,6 +1,7 @@
 import anndata
 import scanpy as sc
 import seaborn as sns
+import matplotlib.pyplot as plt
 
 def qc_plots(in_adata: anndata.AnnData, data_source: str, batch: str) -> None:
     """Plot QC plots for the given AnnData object.
@@ -100,4 +101,48 @@ def qc_plots(in_adata: anndata.AnnData, data_source: str, batch: str) -> None:
         p5.set(title="Proportion of mitochondrial reads per barcode per sample in function of emptyDrops cell calling result")
         """
     
+    return
+
+def pca_variance_ratio_plots(in_adata: anndata.AnnData, nb_pcs: int) -> None:
+    """Plot and compute the variance ratio of the PCA.
+    Parameters
+    ----------
+    in_adata : AnnData
+        The AnnData object to check.
+    
+    nb_pcs : int
+        The number of PCs to plot.
+    
+    Returns
+    -------
+    output : None
+    """
+
+    # Access the percentage of explained variance for each component
+    pca_variance_ratio = in_adata.uns['pca']['variance_ratio']
+    # Print the percentage of explained variance for each component
+    for i, variance in enumerate(pca_variance_ratio):
+        print(f"PC{i+1}: {variance * 100}%")
+
+    # Calculate the cumulative variance
+    cumulative_variance = pca_variance_ratio.cumsum()
+    # Print the cumulative variance
+    print("Cumulative Variance:")
+    for i, variance in enumerate(cumulative_variance):
+        print(f"PC{i+1}: {variance * 100}%")
+
+    # Plot the cumulative variance
+    plt.plot(range(1, len(cumulative_variance) + 1), cumulative_variance, marker='o')
+    plt.xlabel('Number of PCs')
+    plt.ylabel('Cumulative Variance Explained')
+    plt.title('Elbow Graph')
+
+    # Add PC number to the graph
+    for i, variance in enumerate(cumulative_variance):
+        plt.text(i+1, variance, f"PC{i+1}", ha='center', va='bottom', fontsize=8)
+
+    # plot 
+    #sc.pl.pca_variance_ratio(adata, log=False, n_pcs=n_pc, save="elbow_plot.png")
+    sc.pl.pca_variance_ratio(in_adata, log=False, n_pcs=nb_pcs)
+
     return
