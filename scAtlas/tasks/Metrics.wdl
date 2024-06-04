@@ -8,7 +8,6 @@ task CalculateCellMetrics {
     String input_id
 
     # runtime values
-    #String docker = "us.gcr.io/broad-gotc-prod/warp-tools:1.0.9-1700252065"
     String docker = "us.gcr.io/broad-gotc-prod/warp-tools:2.0.0"
     Int machine_mem_mb = 8000
     Int cpu = 4
@@ -85,7 +84,6 @@ task CalculateGeneMetrics {
     String input_id
     # runtime values
 
-    #String docker = "us.gcr.io/broad-gotc-prod/warp-tools:1.0.9-1700252065"
     String docker = "us.gcr.io/broad-gotc-prod/warp-tools:2.0.0"
     Int machine_mem_mb = 32000
     Int cpu = 4
@@ -219,7 +217,6 @@ task FastqMetricsSlideSeq {
 
 
     # Runtime attributes
-    #String docker =  "us.gcr.io/broad-gotc-prod/warp-tools:1.0.9-1700252065"
     String docker = "us.gcr.io/broad-gotc-prod/warp-tools:2.0.0"
     Int cpu = 16
     Int machine_mb = 40000
