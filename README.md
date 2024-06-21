@@ -1,6 +1,6 @@
 # Optimus Pipeline
 
-This project dedicated to evaluation and utilization of the Optimus pipeline that initially developed by Broad Institut, which is a tool for the analysis of single-cell RNA-seq data. 
+This project dedicated to evaluation and utilization of the Optimus pipeline that was initially developed by Broad Institute, which is a tool for the analysis of single-cell RNA-seq data.
 
 This pipeline is designed to be run on Terra, a cloud-based platform for biomedical research.
 
